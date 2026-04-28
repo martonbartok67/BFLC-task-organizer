@@ -17,6 +17,7 @@ const bodyFont = IBM_Plex_Sans({
 });
 
 export const metadata: Metadata = {
+  manifest: '/manifest.json',
   title: "FLC Task Organizer",
   description: "Team-first platform to coordinate complex workflows."
 };
