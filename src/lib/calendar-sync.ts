@@ -4,6 +4,7 @@ import { refreshAccessToken } from "@/lib/google-calendar";
 type CalendarConnectionRow = {
   id: string;
   calendar_id: string;
+  user_id: string | null;
   access_token: string;
   refresh_token: string;
   token_expires_at: string | null;
@@ -16,6 +17,8 @@ export async function getSharedCalendarConnection() {
     .from("calendar_connections")
     .select("*")
     .eq("provider", "google")
+    // TODO: In future, filter by current user_id for per-user preferences
+    // .eq("user_id", userId)
     .order("created_at", { ascending: true })
     .limit(1)
     .maybeSingle<CalendarConnectionRow>();
@@ -54,4 +57,14 @@ export async function ensureFreshAccessToken(connection: CalendarConnectionRow) 
   }
 
   return data;
+}
+
+/**
+ * Determines if calendar events should be auto-converted to tasks
+ * Currently disabled (returns false) - calendar events are viewed separately
+ * In future: can be made configurable per-user
+ */
+export async function shouldCreateTaskFromCalendarEvent(): Promise<boolean> {
+  // DISABLED: No longer auto-create tasks from calendar events
+  return false;
 }

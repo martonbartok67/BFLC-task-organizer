@@ -1,6 +1,6 @@
 export type UserStatus = "pending" | "active" | "rejected";
 
-export type TaskStatus = "backlog" | "todo" | "in_progress" | "review" | "done";
+export type TaskStatus = "todo" | "in_progress" | "done";
 
 export type TaskPriority = "low" | "medium" | "high" | "critical";
 
@@ -105,6 +105,7 @@ export interface CalendarConnection {
   id: string;
   provider: "google";
   calendarId: string;
+  userId: string | null; // null = shared calendar; non-null = user preference (for future)
   accessToken: string;
   refreshToken: string;
   tokenExpiresAt: string | null;

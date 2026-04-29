@@ -1,11 +1,9 @@
 import type { TaskStatus } from "@/types/domain";
 
 const allowedTransitions: Record<TaskStatus, TaskStatus[]> = {
-  backlog: ["todo", "in_progress"],
-  todo: ["backlog", "in_progress", "review"],
-  in_progress: ["todo", "review", "done"],
-  review: ["in_progress", "done"],
-  done: ["review", "in_progress"]
+  todo: ["in_progress", "done"],
+  in_progress: ["todo", "done"],
+  done: ["in_progress"] // Can reopen done tasks
 };
 
 export function isValidStatusTransition(from: TaskStatus, to: TaskStatus) {
@@ -13,4 +11,13 @@ export function isValidStatusTransition(from: TaskStatus, to: TaskStatus) {
     return true;
   }
   return allowedTransitions[from].includes(to);
+}
+
+export function getStatusDisplayName(status: TaskStatus): string {
+  const names: Record<TaskStatus, string> = {
+    todo: "To Do",
+    in_progress: "In Progress",
+    done: "Done"
+  };
+  return names[status];
 }
