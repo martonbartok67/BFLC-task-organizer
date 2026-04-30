@@ -2,11 +2,9 @@ import type { TaskStatus } from "@/types/domain";
 
 // Add the bolded lines below to your file
 const allowedTransitions: Record<TaskStatus, TaskStatus[]> = {
-  backlog: ["todo"], 
-  todo: ["in_progress", "done", "backlog"],
-  in_progress: ["todo", "done", "review"],
-  review: ["in_progress", "done"],
-  done: ["in_progress", "todo"]
+  todo: ["in_progress", "done"],
+  in_progress: ["todo", "done"],
+  done: ["in_progress"] 
 };
 
 export function isValidStatusTransition(from: TaskStatus, to: TaskStatus) {
