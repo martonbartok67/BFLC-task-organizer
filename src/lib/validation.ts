@@ -16,7 +16,7 @@ export const taskCreateSchema = z.object({
   columnId: z.string().uuid(),
   title: z.string().trim().min(2).max(180),
   description: z.string().trim().max(5000).nullable().optional(),
-  status: z.enum(["backlog", "todo", "in_progress", "review", "done"]),
+  status: z.enum(["todo", "in_progress", "done"]),
   priority: z.enum(["low", "medium", "high", "critical"]),
   assigneeId: z.string().uuid().nullable().optional(),
   dueDate: z.string().datetime().nullable().optional(),
