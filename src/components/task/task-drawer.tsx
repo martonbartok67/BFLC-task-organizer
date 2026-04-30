@@ -30,10 +30,8 @@ function fromDateInputValue(date: string) {
 }
 
 const statusOptions: Array<{ value: TaskStatus; label: string }> = [
-  { value: "backlog", label: "Backlog" },
   { value: "todo", label: "To Do" },
   { value: "in_progress", label: "In Progress" },
-  { value: "review", label: "Review" },
   { value: "done", label: "Done" }
 ];
 
