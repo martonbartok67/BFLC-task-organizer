@@ -41,7 +41,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           })}
         </nav>
       </div>
-      <div className="mx-auto flex min-h-screen max-w-[1500px] gap-4 px-3 py-4 sm:gap-6 sm:px-6 sm:py-6">
+      <div className="flex min-h-screen gap-4 px-3 py-4 sm:gap-6 sm:px-6 sm:py-6">
         <aside className="panel hidden w-72 shrink-0 flex-col p-5 md:flex">
           <div className="mb-8">
             <p className="text-xs uppercase tracking-[0.32em] text-slate-500">FLC Team Suite</p>
@@ -81,7 +81,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           </div>
         </aside>
 
-        <main className="flex-1 overflow-hidden rounded-[18px] border border-flc-border bg-flc-panel p-4 shadow-panel sm:p-6">
+        <main className="flex-1 overflow-y-auto rounded-[18px] border border-flc-border bg-flc-panel p-4 shadow-panel sm:p-6">
           {children}
         </main>
       </div>
