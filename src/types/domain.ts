@@ -1,6 +1,6 @@
 export type UserStatus = "pending" | "active" | "rejected";
 
-export type TaskStatus = 'todo' | 'in_progress' | 'done' | 'backlog' | 'review';
+export type TaskStatus = 'todo' | 'in_progress' | 'done';
 
 export type TaskPriority = "low" | "medium" | "high" | "critical";
 
