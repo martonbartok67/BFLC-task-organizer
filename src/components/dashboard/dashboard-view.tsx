@@ -185,7 +185,7 @@ export function DashboardView({ initialProjectId }: { initialProjectId?: string 
         }
       />
 
-      <div className="mb-4 grid gap-4 lg:grid-cols-[2fr_1fr]">
+      <div className="mb-4 grid gap-4 sm:grid-cols-2">
         <Card>
           <h3 className="mb-3 text-sm font-semibold text-flc-text">Create Project</h3>
           <div className="grid gap-2 sm:grid-cols-2">
@@ -227,7 +227,7 @@ export function DashboardView({ initialProjectId }: { initialProjectId?: string 
 
       {error ? <p className="mb-4 text-sm text-flc-danger">{error}</p> : null}
 
-      <div className="grid gap-4 xl:grid-cols-[1fr_330px]">
+      <div className="grid gap-4 lg:grid-cols-[1fr_320px]">
         <section>
           {!boardReady ? (
             <Card>
