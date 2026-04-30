@@ -219,12 +219,10 @@ export async function createProject(input: {
   });
 
   const defaultColumns = [
-    { key: "backlog", name: "Backlog", position: 0 },
-    { key: "todo", name: "To Do", position: 1000 },
-    { key: "in_progress", name: "In Progress", position: 2000 },
-    { key: "review", name: "Review", position: 3000 },
-    { key: "done", name: "Done", position: 4000 }
-  ];
+    { key: "todo", name: "To Do", position: 0 },
+    { key: "in_progress", name: "In Progress", position: 1000 },
+    { key: "done", name: "Done", position: 2000 }
+];
 
   await supabase.from("board_columns").insert(
     defaultColumns.map((column) => ({
