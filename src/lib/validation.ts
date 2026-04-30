@@ -35,7 +35,7 @@ export const taskUpdateSchema = taskCreateSchema
 export const taskMoveSchema = z.object({
   taskId: z.string().uuid(),
   toColumnId: z.string().uuid(),
-  toStatus: z.enum(["backlog", "todo", "in_progress", "review", "done"]),
+  toStatus: z.enum(["todo", "in_progress", "done"]),
   toIndex: z.number().int().min(0)
 });
 
