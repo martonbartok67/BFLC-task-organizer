@@ -621,3 +621,23 @@ export async function computeAllProjectProgress(): Promise<ProjectProgressStats[
     )
   );
 }
+export async function deleteProject(projectId: string) {
+  const supabase = await createClient();
+  const { error } = await supabase.from("projects").delete().eq("id", projectId);
+  if (error) throw error;
+}
+
+export async function deleteTask(taskId: string) {
+  const supabase = await createClient();
+  const { error } = await supabase.from("tasks").delete().eq("id", taskId);
+  if (error) throw error;
+}
+
+export async function assignUserToTask(taskId: string, userId: string) {
+  const supabase = await createClient();
+  const { error } = await supabase.from("task_assignments").insert({
+    task_id: taskId,
+    user_id: userId
+  });
+  if (error) throw error;
+}
