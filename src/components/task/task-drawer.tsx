@@ -44,11 +44,13 @@ const priorityOptions: Array<{ value: TaskPriority; label: string }> = [
 
 export function TaskDrawer({
   taskId,
+  projectId,
   open,
   onClose,
   onTaskChanged
 }: {
   taskId: string | null;
+  projectId: string | null;
   open: boolean;
   onClose: () => void;
   onTaskChanged: () => Promise<void>;
@@ -61,6 +63,10 @@ export function TaskDrawer({
   const [attachmentLabel, setAttachmentLabel] = useState("");
   const [attachmentUrl, setAttachmentUrl] = useState("");
   const [error, setError] = useState<string | null>(null);
+  // Phase 2A: Role-based assignment
+  const [projectMembers, setProjectMembers] = useState<Array<{ userId: string; userName: string; role: string }>>([]);
+  const [userRole, setUserRole] = useState<"admin" | "member" | null>(null);
+  const [isClaiming, setIsClaiming] = useState(false);
 
   useEffect(() => {
     if (!open || !taskId) {
@@ -87,6 +93,27 @@ export function TaskDrawer({
       cancelled = true;
     };
   }, [open, taskId]);
+
+  // Phase 2A: Load project members and user role
+  useEffect(() => {
+    if (!open || !projectId) {
+      return;
+    }
+    let cancelled = false;
+    async function loadProjectContext() {
+      const response = await fetch(`/api/projects/${projectId}/members`);
+      const payload = await response.json();
+      if (!cancelled) {
+        if (response.ok && payload.data?.members) {
+          setProjectMembers(payload.data.members);
+        }
+      }
+    }
+    loadProjectContext();
+    return () => {
+      cancelled = true;
+    };
+  }, [open, projectId]);
 
   const progress = useMemo(() => {
     const total = details?.subtasks.length ?? 0;
@@ -260,6 +287,97 @@ export function TaskDrawer({
     await onTaskChanged();
   }
 
+  /**
+   * Phase 2A: Claim an unassigned task
+   * Only available for members with unassigned tasks
+   */
+  async function claimTask() {
+    if (!taskId || !projectId) {
+      setError("Task or project information missing");
+      return;
+    }
+
+    setIsClaiming(true);
+    setError(null);
+
+    try {
+      const response = await fetch(
+        `/api/projects/${projectId}/tasks/${taskId}/claim`,
+        { method: "POST" }
+      );
+      const payload = await response.json();
+
+      if (!response.ok) {
+        setError(payload.error ?? "Failed to claim task");
+        setIsClaiming(false);
+        return;
+      }
+
+      // Update local task state
+      setDetails((prev) =>
+        prev
+          ? {
+              ...prev,
+              task: { ...prev.task, assigneeId: payload.data.assigneeId }
+            }
+          : prev
+      );
+
+      await onTaskChanged();
+      setIsClaiming(false);
+    } catch (e) {
+      setError("Failed to claim task");
+      setIsClaiming(false);
+    }
+  }
+
+  /**
+   * Phase 2A: Assign task to a member (admin only)
+   */
+  async function assignTask(assigneeId: string) {
+    if (!taskId || !projectId) {
+      setError("Task or project information missing");
+      return;
+    }
+
+    setSaving(true);
+    setError(null);
+
+    try {
+      const response = await fetch(
+        `/api/projects/${projectId}/tasks/${taskId}/assign`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ assigneeId })
+        }
+      );
+      const payload = await response.json();
+
+      if (!response.ok) {
+        setError(payload.error ?? "Failed to assign task");
+        setSaving(false);
+        return;
+      }
+
+      // Update local task state
+      setDetails((prev) =>
+        prev
+          ? {
+              ...prev,
+              task: { ...prev.task, assigneeId: payload.data.assigneeId }
+            }
+          : prev
+      );
+
+      await onTaskChanged();
+      setSaving(false);
+    } catch (e) {
+      setError("Failed to assign task");
+      setSaving(false);
+    }
+  }
+
   if (!open) {
     return null;
   }
@@ -357,6 +475,71 @@ export function TaskDrawer({
                       </option>
                     ))}
                   </select>
+                </label>
+              </div>
+
+              {/* Phase 2A: Assignee field */}
+              <div className="grid gap-3">
+                <label className="text-xs font-medium text-flc-text-muted">
+                  Assigned To
+                  {projectMembers.length > 0 ? (
+                    <div className="mt-1 flex flex-col gap-2">
+                      {details.task.assigneeId ? (
+                        <select
+                          disabled={userRole !== "admin"}
+                          value={details.task.assigneeId}
+                          onChange={(event) => {
+                            const newAssigneeId = event.target.value;
+                            if (userRole === "admin") {
+                              assignTask(newAssigneeId);
+                            }
+                          }}
+                          className="h-10 w-full rounded-lg border border-flc-border px-3 text-sm disabled:bg-flc-panel-muted disabled:cursor-not-allowed"
+                        >
+                          {projectMembers.map((member) => (
+                            <option key={member.userId} value={member.userId}>
+                              {member.userName}
+                            </option>
+                          ))}
+                        </select>
+                      ) : (
+                        <div className="flex gap-2">
+                          {userRole === "member" ? (
+                            <Button
+                              type="button"
+                              size="sm"
+                              variant="primary"
+                              disabled={isClaiming}
+                              onClick={claimTask}
+                              className="flex-1"
+                            >
+                              {isClaiming ? "Claiming..." : "Claim Task"}
+                            </Button>
+                          ) : (
+                            <select
+                              value=""
+                              onChange={(event) => {
+                                const newAssigneeId = event.target.value;
+                                if (newAssigneeId) {
+                                  assignTask(newAssigneeId);
+                                }
+                              }}
+                              className="h-10 w-full rounded-lg border border-flc-border px-3 text-sm"
+                            >
+                              <option value="">-- Select member --</option>
+                              {projectMembers.map((member) => (
+                                <option key={member.userId} value={member.userId}>
+                                  {member.userName}
+                                </option>
+                              ))}
+                            </select>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    <p className="mt-1 text-xs text-flc-text-muted">Loading project members...</p>
+                  )}
                 </label>
               </div>
 

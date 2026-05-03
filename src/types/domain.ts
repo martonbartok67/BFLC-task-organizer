@@ -16,6 +16,8 @@ export type ActivityType =
 
 export type CalendarSyncDirection = "task_to_google" | "google_to_task";
 
+export type ProjectMemberRole = "admin" | "member";
+
 export interface Profile {
   id: string;
   email: string;
@@ -30,8 +32,17 @@ export interface Project {
   code: string;
   description: string | null;
   createdBy: string;
+  adminId: string;
   createdAt: string;
   updatedAt: string;
+}
+
+export interface ProjectMember {
+  id: string;
+  projectId: string;
+  userId: string;
+  role: ProjectMemberRole;
+  joinedAt: string;
 }
 
 export interface BoardColumn {
@@ -58,6 +69,10 @@ export interface Task {
   createdBy: string;
   createdAt: string;
   updatedAt: string;
+  // UI helpers (optional, set by API)
+  isUnassigned?: boolean;
+  canClaim?: boolean;
+  assigneeName?: string;
 }
 
 export interface Subtask {

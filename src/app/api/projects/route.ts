@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { requireApiActiveProfile } from "@/lib/api-guard";
 import { createProject, listProjects, logActivity } from "@/lib/data-access";
 import { projectCreateSchema } from "@/lib/validation";
+import { createClient } from "@/lib/supabase/server";
 
 export async function GET() {
   const profileResult = await requireApiActiveProfile();
@@ -37,6 +38,27 @@ export async function POST(request: Request) {
   if (error || !data) {
     return NextResponse.json({ error: error?.message ?? "Failed to create project" }, { status: 500 });
   }
+
+  // Phase 2A: Auto-add creator as admin to project_members
+  const supabase = await createClient();
+  const { error: memberError } = await supabase
+    .from("project_members")
+    .insert({
+      project_id: data.id,
+      user_id: profileResult.profile.id,
+      role: "admin"
+    });
+
+  if (memberError) {
+    // Log but don't fail — project was created successfully
+    console.error("Failed to add creator to project_members:", memberError);
+  }
+
+  // Update project with admin_id
+  await supabase
+    .from("projects")
+    .update({ admin_id: profileResult.profile.id })
+    .eq("id", data.id);
 
   await logActivity({
     actorId: profileResult.profile.id,

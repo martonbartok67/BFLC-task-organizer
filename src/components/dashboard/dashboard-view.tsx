@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { ArrowRight, RefreshCcw } from "lucide-react";
 import { KanbanBoard } from "@/components/dashboard/kanban-board";
+import { MembersManagement } from "@/components/dashboard/members-management";
 import { ActivityFeed } from "@/components/collaboration/activity-feed";
 import { TaskDrawer } from "@/components/task/task-drawer";
 import { Button } from "@/components/ui/button";
@@ -38,6 +39,9 @@ export function DashboardView({ initialProjectId }: { initialProjectId?: string 
   const [projectName, setProjectName] = useState("");
   const [projectDescription, setProjectDescription] = useState("");
   const [drawerTaskId, setDrawerTaskId] = useState<string | null>(null);
+  // Phase 2A: View mode and user role
+  const [viewMode, setViewMode] = useState<"board" | "members">("board");
+  const [userRole, setUserRole] = useState<"admin" | "member" | null>(null);
 
   async function loadProjects() {
     const response = await fetch("/api/projects");
@@ -64,6 +68,8 @@ export function DashboardView({ initialProjectId }: { initialProjectId?: string 
       throw new Error(payload.error ?? "Could not load board.");
     }
     setBoardData(payload.data as BoardPayload);
+    // Phase 2A: Set user role from response
+    setUserRole(payload.data?.userRole ?? null);
     setLoadingBoard(false);
   }
 
@@ -229,19 +235,48 @@ export function DashboardView({ initialProjectId }: { initialProjectId?: string 
 
       <div className="grid gap-4 lg:grid-cols-[1fr_320px]">
         <section>
+          {/* Phase 2A: View mode tabs */}
+          <div className="mb-4 flex gap-2 border-b border-flc-border">
+            <button
+              onClick={() => setViewMode("board")}
+              className={`px-4 py-2 text-sm font-medium transition-colors ${
+                viewMode === "board"
+                  ? "text-flc-primary border-b-2 border-flc-primary"
+                  : "text-flc-text-muted hover:text-flc-text"
+              }`}
+            >
+              Board
+            </button>
+            <button
+              onClick={() => setViewMode("members")}
+              className={`px-4 py-2 text-sm font-medium transition-colors ${
+                viewMode === "members"
+                  ? "text-flc-primary border-b-2 border-flc-primary"
+                  : "text-flc-text-muted hover:text-flc-text"
+              }`}
+            >
+              Members
+            </button>
+          </div>
+
           {!boardReady ? (
             <Card>
               <p className="text-sm text-flc-text-muted">
-                {loadingBoard ? "Loading board..." : "Create or select a project to start organizing tasks."}
+                {loadingBoard ? "Loading..." : "Create or select a project to start."}
               </p>
             </Card>
-          ) : (
+          ) : viewMode === "board" ? (
             <KanbanBoard
               columns={boardData.columns}
               tasks={boardData.tasks}
               onTaskSelect={setDrawerTaskId}
               onTaskMove={moveTask}
               onTaskCreate={createTask}
+            />
+          ) : (
+            <MembersManagement
+              projectId={selectedProjectId}
+              userRole={userRole}
             />
           )}
         </section>
@@ -250,6 +285,7 @@ export function DashboardView({ initialProjectId }: { initialProjectId?: string 
 
       <TaskDrawer
         taskId={drawerTaskId}
+        projectId={selectedProjectId}
         open={Boolean(drawerTaskId)}
         onClose={() => setDrawerTaskId(null)}
         onTaskChanged={async () => {

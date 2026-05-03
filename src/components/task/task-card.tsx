@@ -35,6 +35,11 @@ export function TaskCard({
       ) : null}
 
       <div className="flex flex-wrap items-center gap-2">
+        {task.isUnassigned ? (
+          <Badge className="gap-1 bg-blue-100 text-blue-700">
+            <span>Unassigned</span>
+          </Badge>
+        ) : null}
         <Badge tone={PRIORITY_TONE[task.priority]} className="gap-1">
           <Flag size={12} />
           <span>{PRIORITY_LABELS[task.priority]}</span>
