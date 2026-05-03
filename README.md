@@ -4,6 +4,7 @@ Focused, sophisticated task management for a single team workspace.
 
 ## Stack
 
+
 - Next.js App Router + TypeScript + Tailwind
 - Supabase Auth + Postgres + Realtime + Storage
 - Vercel deployment target
