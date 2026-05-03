@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { requireApiActiveProfile } from "@/lib/api-guard";
-import { getProjectBoard, updateProject } from "@/lib/data-access";
+import { deleteProject, getProjectBoard, updateProject } from "@/lib/data-access";
 import { projectUpdateSchema } from "@/lib/validation";
 
 export async function GET(
@@ -46,4 +46,33 @@ export async function PATCH(
   }
 
   return NextResponse.json({ data });
+}
+
+export async function DELETE(
+  _request: Request,
+  context: { params: Promise<{ id: string }> }
+) {
+  const profileResult = await requireApiActiveProfile();
+  if ("errorResponse" in profileResult) {
+    return profileResult.errorResponse;
+  }
+
+  const { id } = await context.params;
+  
+  // Check that the user is the admin of the project
+  const { data: boardData } = await getProjectBoard(id);
+  if (!boardData?.project) {
+    return NextResponse.json({ error: "Project not found" }, { status: 404 });
+  }
+  
+  if (boardData.project.adminId !== profileResult.profile.id) {
+    return NextResponse.json({ error: "Only the project admin can delete the project" }, { status: 403 });
+  }
+
+  const { error } = await deleteProject(id);
+  if (error) {
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+
+  return NextResponse.json({ success: true });
 }

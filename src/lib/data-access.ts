@@ -5,6 +5,7 @@ import type {
   ActivityEvent,
   ActivityType,
   BoardColumn,
+  Profile,
   Project,
   ProjectProgressStats,
   Subtask,
@@ -18,6 +19,7 @@ type ProjectRow = {
   name: string;
   code: string;
   description: string | null;
+  admin_id: string | null;
   created_by: string;
   created_at: string;
   updated_at: string;
@@ -96,6 +98,7 @@ function mapProject(row: ProjectRow): Project {
     name: row.name,
     code: row.code,
     description: row.description,
+    adminId: row.admin_id,
     createdBy: row.created_by,
     createdAt: row.created_at,
     updatedAt: row.updated_at
@@ -590,4 +593,66 @@ export async function computeAllProjectProgress(): Promise<ProjectProgressStats[
       tasks.filter((task) => task.projectId === project.id)
     )
   );
+}
+
+export async function deleteProject(projectId: string) {
+  const supabase = await createClient();
+  const { error } = await supabase.from("projects").delete().eq("id", projectId);
+  return { error };
+}
+
+export async function deleteTask(taskId: string) {
+  const supabase = await createClient();
+  const { error } = await supabase.from("tasks").delete().eq("id", taskId);
+  return { error };
+}
+
+export async function assignUserToTask(taskId: string, userId: string) {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("tasks")
+    .update({ assignee_id: userId, updated_at: new Date().toISOString() })
+    .eq("id", taskId)
+    .select("*")
+    .single<TaskRow>();
+
+  return { data: data ? mapTask(data) : null, error };
+}
+
+type ProfileRow = {
+  id: string;
+  email: string;
+  full_name: string;
+  status: "pending" | "active" | "rejected";
+  created_at: string;
+};
+
+function mapProfile(row: ProfileRow): Profile {
+  return {
+    id: row.id,
+    email: row.email,
+    fullName: row.full_name,
+    status: row.status,
+    createdAt: row.created_at
+  };
+}
+
+export async function listProjectMembers(projectId: string) {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("project_members")
+    .select("user_id, profiles:user_id(id, email, full_name, status, created_at)")
+    .eq("project_id", projectId)
+    .returns<Array<{ user_id: string; profiles: ProfileRow }>>();
+
+  if (error || !data) {
+    return { data: null, error };
+  }
+
+  const profiles = data
+    .map((row) => row.profiles)
+    .filter((profile): profile is ProfileRow => Boolean(profile))
+    .map(mapProfile);
+
+  return { data: profiles, error: null };
 }

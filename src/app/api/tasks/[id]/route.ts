@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { requireApiActiveProfile } from "@/lib/api-guard";
-import { listTaskDetails, logActivity, updateTask } from "@/lib/data-access";
+import { deleteTask, getProjectBoard, listTaskDetails, logActivity, updateTask } from "@/lib/data-access";
 import { taskUpdateSchema } from "@/lib/validation";
 import type { Task } from "@/types/domain";
 
@@ -77,4 +77,39 @@ export async function PATCH(
   });
 
   return NextResponse.json({ data });
+}
+
+export async function DELETE(
+  _request: Request,
+  context: { params: Promise<{ id: string }> }
+) {
+  const profileResult = await requireApiActiveProfile();
+  if ("errorResponse" in profileResult) {
+    return profileResult.errorResponse;
+  }
+
+  const { id } = await context.params;
+  
+  // Get task details first to check project admin
+  const { data: taskData } = await listTaskDetails(id);
+  if (!taskData?.task) {
+    return NextResponse.json({ error: "Task not found" }, { status: 404 });
+  }
+
+  // Check that user is the project admin
+  const { data: boardData } = await getProjectBoard(taskData.task.projectId);
+  if (!boardData?.project) {
+    return NextResponse.json({ error: "Project not found" }, { status: 404 });
+  }
+
+  if (boardData.project.adminId !== profileResult.profile.id) {
+    return NextResponse.json({ error: "Only the project admin can delete tasks" }, { status: 403 });
+  }
+
+  const { error } = await deleteTask(id);
+  if (error) {
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+
+  return NextResponse.json({ success: true });
 }

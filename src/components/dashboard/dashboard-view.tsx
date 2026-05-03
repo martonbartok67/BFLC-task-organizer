@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { ArrowRight, RefreshCcw } from "lucide-react";
+import { ArrowRight, RefreshCcw, Trash2 } from "lucide-react";
 import { KanbanBoard } from "@/components/dashboard/kanban-board";
 import { ActivityFeed } from "@/components/collaboration/activity-feed";
 import { TaskDrawer } from "@/components/task/task-drawer";
@@ -10,7 +10,7 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { SectionHeader } from "@/components/ui/section-header";
 import { Textarea } from "@/components/ui/textarea";
-import type { BoardColumn, Project, Task } from "@/types/domain";
+import type { BoardColumn, Profile, Project, Task } from "@/types/domain";
 
 type BoardPayload = {
   project: Project | null;
@@ -38,6 +38,16 @@ export function DashboardView({ initialProjectId }: { initialProjectId?: string 
   const [projectName, setProjectName] = useState("");
   const [projectDescription, setProjectDescription] = useState("");
   const [drawerTaskId, setDrawerTaskId] = useState<string | null>(null);
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  const [projectMembers, setProjectMembers] = useState<Profile[]>([]);
+
+  async function loadCurrentUser() {
+    const response = await fetch("/api/auth/me");
+    if (response.ok) {
+      const payload = await response.json();
+      setCurrentUserId(payload.user?.id ?? null);
+    }
+  }
 
   async function loadProjects() {
     const response = await fetch("/api/projects");
@@ -67,9 +77,18 @@ export function DashboardView({ initialProjectId }: { initialProjectId?: string 
     setLoadingBoard(false);
   }
 
+  async function loadProjectMembers(projectId: string) {
+    const response = await fetch(`/api/projects/${projectId}/members`);
+    if (response.ok) {
+      const payload = await response.json();
+      setProjectMembers((payload.data ?? []) as Profile[]);
+    }
+  }
+
   async function reloadEverything() {
     try {
       setError(null);
+      await loadCurrentUser();
       await loadProjects();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Unexpected error");
@@ -87,11 +106,21 @@ export function DashboardView({ initialProjectId }: { initialProjectId?: string 
     loadBoard(selectedProjectId).catch((err: unknown) =>
       setError(err instanceof Error ? err.message : "Could not load board")
     );
+    loadProjectMembers(selectedProjectId);
   }, [selectedProjectId]);
 
   const projectOptions = useMemo(
     () => projects.map((project) => ({ id: project.id, name: project.name })),
     [projects]
+  );
+
+  const selectedProject = useMemo(
+    () => projects.find((p) => p.id === selectedProjectId) ?? null,
+    [projects, selectedProjectId]
+  );
+
+  const isAdmin = Boolean(
+    currentUserId && selectedProject?.adminId && currentUserId === selectedProject.adminId
   );
 
   async function createProject() {
@@ -118,6 +147,24 @@ export function DashboardView({ initialProjectId }: { initialProjectId?: string 
     setProjectDescription("");
     await loadProjects();
     setSelectedProjectId(createdProject.id);
+  }
+
+  async function deleteProject() {
+    if (!selectedProjectId) return;
+    const confirmed = window.confirm("Are you sure you want to delete this project? This action cannot be undone.");
+    if (!confirmed) return;
+
+    const response = await fetch(`/api/projects/${selectedProjectId}`, {
+      method: "DELETE"
+    });
+    if (!response.ok) {
+      const payload = await response.json();
+      setError(payload.error ?? "Could not delete project.");
+      return;
+    }
+    setSelectedProjectId(null);
+    setBoardData(null);
+    await loadProjects();
   }
 
   async function moveTask(input: {
@@ -164,6 +211,36 @@ export function DashboardView({ initialProjectId }: { initialProjectId?: string 
     await loadBoard(selectedProjectId);
   }
 
+  async function deleteTask(taskId: string) {
+    const response = await fetch(`/api/tasks/${taskId}`, {
+      method: "DELETE"
+    });
+    if (!response.ok) {
+      const payload = await response.json();
+      setError(payload.error ?? "Could not delete task.");
+      return;
+    }
+    if (selectedProjectId) {
+      await loadBoard(selectedProjectId);
+    }
+  }
+
+  async function assignTask(taskId: string, userId: string) {
+    const response = await fetch(`/api/tasks/${taskId}/assign`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ userId })
+    });
+    if (!response.ok) {
+      const payload = await response.json();
+      setError(payload.error ?? "Could not assign task.");
+      return;
+    }
+    if (selectedProjectId) {
+      await loadBoard(selectedProjectId);
+    }
+  }
+
   const boardReady = boardData?.project && boardData.columns.length > 0;
 
   return (
@@ -207,18 +284,30 @@ export function DashboardView({ initialProjectId }: { initialProjectId?: string 
 
         <Card>
           <h3 className="mb-2 text-sm font-semibold text-flc-text">Project Switcher</h3>
-          <select
-            className="h-10 w-full rounded-lg border border-flc-border px-3 text-sm"
-            value={selectedProjectId ?? ""}
-            onChange={(event) => setSelectedProjectId(event.target.value || null)}
-          >
-            <option value="">Select project...</option>
-            {projectOptions.map((option) => (
-              <option key={option.id} value={option.id}>
-                {option.name}
-              </option>
-            ))}
-          </select>
+          <div className="flex gap-2">
+            <select
+              className="h-10 flex-1 rounded-lg border border-flc-border px-3 text-sm"
+              value={selectedProjectId ?? ""}
+              onChange={(event) => setSelectedProjectId(event.target.value || null)}
+            >
+              <option value="">Select project...</option>
+              {projectOptions.map((option) => (
+                <option key={option.id} value={option.id}>
+                  {option.name}
+                </option>
+              ))}
+            </select>
+            {isAdmin && selectedProjectId ? (
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-10 text-flc-danger hover:bg-flc-danger/10"
+                onClick={deleteProject}
+              >
+                <Trash2 size={16} />
+              </Button>
+            ) : null}
+          </div>
           <p className="mt-2 text-xs text-flc-text-muted">
             One workspace, multiple initiatives, unified execution.
           </p>
@@ -239,9 +328,14 @@ export function DashboardView({ initialProjectId }: { initialProjectId?: string 
             <KanbanBoard
               columns={boardData.columns}
               tasks={boardData.tasks}
+              currentUserId={currentUserId}
+              projectAdminId={selectedProject?.adminId}
+              projectMembers={projectMembers}
               onTaskSelect={setDrawerTaskId}
               onTaskMove={moveTask}
               onTaskCreate={createTask}
+              onTaskDelete={deleteTask}
+              onTaskAssign={assignTask}
             />
           )}
         </section>

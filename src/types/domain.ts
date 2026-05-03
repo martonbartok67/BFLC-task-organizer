@@ -29,6 +29,7 @@ export interface Project {
   name: string;
   code: string;
   description: string | null;
+  adminId: string | null;
   createdBy: string;
   createdAt: string;
   updatedAt: string;

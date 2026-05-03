@@ -1,11 +1,16 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { Plus } from "lucide-react";
+import { Plus, Trash2, UserPlus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger
+} from "@/components/ui/popover";
 import { TaskCard } from "@/components/task/task-card";
-import type { BoardColumn, Task, TaskStatus } from "@/types/domain";
+import type { BoardColumn, Profile, Task, TaskStatus } from "@/types/domain";
 
 type MoveTaskInput = {
   taskId: string;
@@ -17,19 +22,32 @@ type MoveTaskInput = {
 export function KanbanBoard({
   columns,
   tasks,
+  currentUserId,
+  projectAdminId,
+  projectMembers = [],
   onTaskSelect,
   onTaskMove,
-  onTaskCreate
+  onTaskCreate,
+  onTaskDelete,
+  onTaskAssign
 }: {
   columns: BoardColumn[];
   tasks: Task[];
+  currentUserId?: string | null;
+  projectAdminId?: string | null;
+  projectMembers?: Profile[];
   onTaskSelect: (taskId: string) => void;
   onTaskMove: (input: MoveTaskInput) => Promise<void>;
   onTaskCreate: (input: { title: string; columnId: string; status: TaskStatus }) => Promise<void>;
+  onTaskDelete?: (taskId: string) => Promise<void>;
+  onTaskAssign?: (taskId: string, userId: string) => Promise<void>;
 }) {
   const [draggedTaskId, setDraggedTaskId] = useState<string | null>(null);
   const [isCreatingByColumn, setIsCreatingByColumn] = useState<Record<string, boolean>>({});
   const [newTitleByColumn, setNewTitleByColumn] = useState<Record<string, string>>({});
+  const [assignPopoverOpen, setAssignPopoverOpen] = useState<Record<string, boolean>>({});
+
+  const isAdmin = Boolean(currentUserId && projectAdminId && currentUserId === projectAdminId);
 
   const tasksByColumn = useMemo(() => {
     const map = new Map<string, Task[]>();
@@ -74,6 +92,20 @@ export function KanbanBoard({
     });
     setNewTitleByColumn((prev) => ({ ...prev, [column.id]: "" }));
     setIsCreatingByColumn((prev) => ({ ...prev, [column.id]: false }));
+  }
+
+  async function handleDeleteTask(taskId: string, event: React.MouseEvent) {
+    event.stopPropagation();
+    if (onTaskDelete) {
+      await onTaskDelete(taskId);
+    }
+  }
+
+  async function handleAssignUser(taskId: string, userId: string) {
+    if (onTaskAssign) {
+      await onTaskAssign(taskId, userId);
+    }
+    setAssignPopoverOpen((prev) => ({ ...prev, [taskId]: false }));
   }
 
   return (
@@ -148,12 +180,68 @@ export function KanbanBoard({
                     handleDrop(column, index);
                   }}
                 >
-                  <TaskCard
-                    task={task}
-                    draggable
-                    onDragStart={setDraggedTaskId}
-                    onClick={() => onTaskSelect(task.id)}
-                  />
+                  <div className="group relative">
+                    <TaskCard
+                      task={task}
+                      draggable
+                      onDragStart={setDraggedTaskId}
+                      onClick={() => onTaskSelect(task.id)}
+                    />
+                    <div className="absolute right-2 top-2 flex gap-1 opacity-0 transition-opacity group-hover:opacity-100">
+                      <Popover
+                        open={assignPopoverOpen[task.id] ?? false}
+                        onOpenChange={(open) =>
+                          setAssignPopoverOpen((prev) => ({ ...prev, [task.id]: open }))
+                        }
+                      >
+                        <PopoverTrigger asChild>
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            className="h-7 w-7 p-0"
+                            onClick={(event) => event.stopPropagation()}
+                          >
+                            <UserPlus size={14} />
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent
+                          className="w-48 p-2"
+                          onClick={(event) => event.stopPropagation()}
+                        >
+                          <p className="mb-2 text-xs font-medium text-flc-text-muted">
+                            Assign Member
+                          </p>
+                          {projectMembers.length === 0 ? (
+                            <p className="text-xs text-flc-text-muted">No members available</p>
+                          ) : (
+                            <div className="flex flex-col gap-1">
+                              {projectMembers.map((member) => (
+                                <Button
+                                  key={member.id}
+                                  size="sm"
+                                  variant={task.assigneeId === member.id ? "default" : "ghost"}
+                                  className="justify-start text-xs"
+                                  onClick={() => handleAssignUser(task.id, member.id)}
+                                >
+                                  {member.fullName || member.email}
+                                </Button>
+                              ))}
+                            </div>
+                          )}
+                        </PopoverContent>
+                      </Popover>
+                      {isAdmin && onTaskDelete ? (
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          className="h-7 w-7 p-0 text-flc-danger hover:bg-flc-danger/10"
+                          onClick={(event) => handleDeleteTask(task.id, event)}
+                        >
+                          <Trash2 size={14} />
+                        </Button>
+                      ) : null}
+                    </div>
+                  </div>
                 </div>
               ))}
               {columnTasks.length === 0 ? (
