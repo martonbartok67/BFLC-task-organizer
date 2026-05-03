@@ -309,7 +309,7 @@ export async function getProjectBoard(projectId: string) {
       columns: columnsResult.data?.map(mapColumn) ?? [],
       tasks
     },
-    error: projectResult.error ?? columnsResult.error ?? tasksResult.error ?? (assignmentsResult && assignmentsResult.error ? assignmentsResult.error : null)
+    error: projectResult.error ?? columnsResult.error ?? tasksResult.error ?? ("error" in assignmentsResult ? assignmentsResult.error : null)
   };
 }
 
