@@ -129,7 +129,7 @@ export function MembersManagement({
     <div className="space-y-6">
       <SectionHeader
         title="Project Members"
-        description="Manage team members and their roles"
+        subtitle="Manage team members and their roles"
       />
 
       {error ? (
