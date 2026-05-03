@@ -19,6 +19,7 @@ type ProjectRow = {
   code: string;
   description: string | null;
   created_by: string;
+  admin_id: string; // 👈 ADD THIS LINE
   created_at: string;
   updated_at: string;
 };
