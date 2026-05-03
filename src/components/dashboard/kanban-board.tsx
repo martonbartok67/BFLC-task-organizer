@@ -219,7 +219,7 @@ export function KanbanBoard({
                                 <Button
                                   key={member.id}
                                   size="sm"
-                                  variant={task.assigneeId === member.id ? "default" : "ghost"}
+                                  variant={task.assigneeId === member.id ? "primary" : "ghost"}
                                   className="justify-start text-xs"
                                   onClick={() => handleAssignUser(task.id, member.id)}
                                 >
