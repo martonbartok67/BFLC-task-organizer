@@ -97,6 +97,7 @@ function mapProject(row: ProjectRow): Project {
     code: row.code,
     description: row.description,
     createdBy: row.created_by,
+    adminId: row.admin_id,
     createdAt: row.created_at,
     updatedAt: row.updated_at
   };
@@ -273,13 +274,41 @@ export async function getProjectBoard(projectId: string) {
       .returns<TaskRow[]>()
   ]);
 
+  // Phase 2B: Fetch task assignments
+  const taskIds = tasksResult.data?.map((t) => t.id) ?? [];
+  const assignmentsResult = taskIds.length > 0
+    ? await supabase
+        .from("task_assignments")
+        .select("task_id, user_id, profiles:user_id(full_name, email)")
+        .in("task_id", taskIds)
+    : { data: [] };
+
+  // Phase 2B: Map assignments to tasks
+  const assignmentsByTask = new Map<string, Array<{ userId: string; userName: string }>>();
+  assignmentsResult.data?.forEach((a: any) => {
+    const taskId = a.task_id;
+    if (!assignmentsByTask.has(taskId)) {
+      assignmentsByTask.set(taskId, []);
+    }
+    assignmentsByTask.get(taskId)!.push({
+      userId: a.user_id,
+      userName: a.profiles?.full_name || a.profiles?.email || "Unknown"
+    });
+  });
+
+  const tasks = tasksResult.data?.map((task) => ({
+    ...mapTask(task),
+    assigneeIds: assignmentsByTask.get(task.id)?.map((a) => a.userId),
+    assigneeNames: assignmentsByTask.get(task.id)?.map((a) => a.userName)
+  })) ?? [];
+
   return {
     data: {
       project: projectResult.data ? mapProject(projectResult.data) : null,
       columns: columnsResult.data?.map(mapColumn) ?? [],
-      tasks: tasksResult.data?.map(mapTask) ?? []
+      tasks
     },
-    error: projectResult.error ?? columnsResult.error ?? tasksResult.error
+    error: projectResult.error ?? columnsResult.error ?? tasksResult.error ?? (assignmentsResult && assignmentsResult.error ? assignmentsResult.error : null)
   };
 }
 

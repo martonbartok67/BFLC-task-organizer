@@ -62,7 +62,7 @@ export interface Task {
   description: string | null;
   status: TaskStatus;
   priority: TaskPriority;
-  assigneeId: string | null;
+  assigneeId: string | null; // Deprecated: kept for Phase 2A compatibility
   dueDate: string | null;
   startDate: string | null;
   position: number;
@@ -70,6 +70,9 @@ export interface Task {
   createdBy: string;
   createdAt: string;
   updatedAt: string;
+  // Phase 2B: Multiple assignees
+  assigneeIds?: string[];
+  assigneeNames?: string[];
   // UI helpers (optional, set by API)
   isUnassigned?: boolean;
   canClaim?: boolean;
