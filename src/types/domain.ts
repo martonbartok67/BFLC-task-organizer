@@ -13,7 +13,8 @@ export type ActivityType =
   | "subtask_toggled"
   | "attachment_added"
   | "calendar_synced"
-  | "role_changed";
+  | "role_changed"
+  | "member_added";
 
 export type CalendarSyncDirection = "task_to_google" | "google_to_task";
 
