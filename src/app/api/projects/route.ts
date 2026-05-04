@@ -39,26 +39,40 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: error?.message ?? "Failed to create project" }, { status: 500 });
   }
 
-  // Phase 2A: Auto-add creator as admin to project_members
+  // Phase 2A: Auto-add creator as admin to project_members (CRITICAL)
   const supabase = await createClient();
-  const { error: memberError } = await supabase
+  const { error: memberError, data: memberData } = await supabase
     .from("project_members")
     .insert({
       project_id: data.id,
       user_id: profileResult.profile.id,
       role: "admin"
-    });
+    })
+    .select();
 
-  if (memberError) {
-    // Log but don't fail — project was created successfully
-    console.error("Failed to add creator to project_members:", memberError);
+  if (memberError || !memberData || memberData.length === 0) {
+    console.error("CRITICAL: Failed to add creator as admin to project_members:", {
+      projectId: data.id,
+      userId: profileResult.profile.id,
+      error: memberError,
+      data: memberData
+    });
+    // Return error instead of silently failing
+    return NextResponse.json(
+      { error: "Failed to set up project member permissions. Please try again." },
+      { status: 500 }
+    );
   }
 
   // Update project with admin_id
-  await supabase
+  const { error: updateError } = await supabase
     .from("projects")
     .update({ admin_id: profileResult.profile.id })
     .eq("id", data.id);
+
+  if (updateError) {
+    console.error("Failed to update admin_id on project:", updateError);
+  }
 
   await logActivity({
     actorId: profileResult.profile.id,
