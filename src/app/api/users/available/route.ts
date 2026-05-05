@@ -40,7 +40,7 @@ export async function GET(request: Request) {
 
   // Get users already in project
   const { data: projectMembers } = await supabase
-    .from("project_members")
+    .from("project_assignments")
     .select("user_id")
     .eq("project_id", projectId);
 

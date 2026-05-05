@@ -109,47 +109,41 @@ export async function isProjectCreator(
 }
 
 /**
- * Get user's role in a project
- * Returns: 'admin' | 'member' | null
+ * Get user's effective role in a project
+ * Phase 3: Global admins = "admin", assigned members = "member", else null
  */
 export async function getUserRoleInProject(
   projectId: string,
   userId: string
 ): Promise<"admin" | "member" | null> {
-  const supabase = await createClient();
+  const [adminStatus, assigned] = await Promise.all([
+    isGlobalAdmin(userId),
+    isAssignedToProject(projectId, userId)
+  ]);
 
-  const { data, error } = await supabase
-    .from("project_members")
-    .select("role")
-    .eq("project_id", projectId)
-    .eq("user_id", userId)
-    .maybeSingle<{ role: "admin" | "member" }>();
-
-  if (error || !data) {
-    return null;
-  }
-
-  return data.role;
+  if (adminStatus) return "admin";
+  if (assigned) return "member";
+  return null;
 }
 
 /**
  * Check if user is admin in project
+ * Phase 3: Global admin = project admin
  */
 export async function isProjectAdmin(
   projectId: string,
   userId: string
 ): Promise<boolean> {
-  const role = await getUserRoleInProject(projectId, userId);
-  return role === "admin";
+  return isGlobalAdmin(userId);
 }
 
 /**
  * Check if user is member (or admin) in project
+ * Phase 3: Global admin OR assigned to project
  */
 export async function isProjectMember(
   projectId: string,
   userId: string
 ): Promise<boolean> {
-  const role = await getUserRoleInProject(projectId, userId);
-  return role !== null;
+  return canViewProject(projectId, userId);
 }

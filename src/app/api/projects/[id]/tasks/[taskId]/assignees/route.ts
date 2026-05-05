@@ -49,7 +49,7 @@ export async function POST(
 
   // Verify user is project member
   const { data: member } = await supabase
-    .from("project_members")
+    .from("project_assignments")
     .select("role")
     .eq("project_id", projectId)
     .eq("user_id", userId)

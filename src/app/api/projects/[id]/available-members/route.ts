@@ -44,7 +44,7 @@ export async function GET(
 
   // Get current project members
   const { data: currentMembers, error: membersError } = await supabase
-    .from("project_members")
+    .from("project_assignments")
     .select("user_id")
     .eq("project_id", projectId);
 

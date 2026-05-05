@@ -216,7 +216,7 @@ export async function createProject(input: {
     return { data: null, error };
   }
 
-  await supabase.from("project_members").insert({
+  await supabase.from("project_assignments").insert({
     project_id: data.id,
     user_id: input.createdBy
   });

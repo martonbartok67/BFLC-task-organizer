@@ -38,7 +38,7 @@ export async function POST(
 
   // Check if user already in project
   const { data: existing } = await supabase
-    .from("project_members")
+    .from("project_assignments")
     .select("id")
     .eq("project_id", projectId)
     .eq("user_id", userId)
@@ -63,10 +63,10 @@ export async function POST(
   }
 
   // Add member
-  const { error: insertError } = await supabase.from("project_members").insert({
+  const { error: insertError } = await supabase.from("project_assignments").insert({
     project_id: projectId,
     user_id: userId,
-    role: "member"
+
   });
 
   if (insertError) {
