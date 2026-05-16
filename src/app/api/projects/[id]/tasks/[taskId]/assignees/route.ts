@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { requireApiActiveProfile } from "@/lib/api-guard";
-import { isProjectAdmin } from "@/lib/access-control";
+import { isAssignedToProject } from "@/lib/access-control";
 import { createClient } from "@/lib/supabase/server";
 import { logActivity } from "@/lib/data-access";
 
@@ -25,10 +25,11 @@ export async function POST(
     return NextResponse.json({ error: "userId required" }, { status: 400 });
   }
 
-  const isAdmin = await isProjectAdmin(projectId, profileResult.profile.id);
-  if (!isAdmin) {
+  // Phase 5: Verify actor is project member
+  const isActorMember = await isAssignedToProject(projectId, profileResult.profile.id);
+  if (!isActorMember) {
     return NextResponse.json(
-      { error: "Only admins can assign tasks" },
+      { error: "User is not a member of this project" },
       { status: 403 }
     );
   }
@@ -48,14 +49,8 @@ export async function POST(
   }
 
   // Verify user is project member
-  const { data: member } = await supabase
-    .from("project_assignments")
-    .select("role")
-    .eq("project_id", projectId)
-    .eq("user_id", userId)
-    .maybeSingle();
-
-  if (!member) {
+  const isUserMember = await isAssignedToProject(projectId, userId);
+  if (!isUserMember) {
     return NextResponse.json(
       { error: "User not in project" },
       { status: 400 }

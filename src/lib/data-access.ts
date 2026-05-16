@@ -42,6 +42,8 @@ type TaskRow = {
   status: Task["status"];
   priority: Task["priority"];
   assignee_id: string | null;
+  assignee_full_name?: string | null;
+  assignee_email?: string | null;
   due_date: string | null;
   start_date: string | null;
   position: number;
@@ -131,7 +133,9 @@ function mapTask(row: TaskRow): Task {
     isMilestone: row.is_milestone,
     createdBy: row.created_by,
     createdAt: row.created_at,
-    updatedAt: row.updated_at
+    updatedAt: row.updated_at,
+    // Phase 6: Assignee visibility
+    assigneeName: row.assignee_full_name ? `${row.assignee_full_name} (${row.assignee_email})` : undefined
   };
 }
 
@@ -316,11 +320,32 @@ export async function getProjectBoard(projectId: string) {
 
 export async function listTasks(projectId?: string) {
   const supabase = await createClient();
-  const query = supabase.from("tasks").select("*").order("updated_at", { ascending: false });
+  // Phase 6: Include assignee profile data (name, email)
+  const query = supabase
+    .from("tasks")
+    .select(
+      `*,
+      profiles!assignee_id (
+        id,
+        full_name,
+        email
+      )`
+    )
+    .order("updated_at", { ascending: false });
   if (projectId) {
     query.eq("project_id", projectId);
   }
-  const { data, error } = await query.returns<TaskRow[]>();
+  
+  const { data: rawData, error } = await query.returns<any[]>();
+  
+  // Flatten the nested profile data
+  const data = rawData?.map((task: any) => ({
+    ...task,
+    assignee_full_name: task.profiles?.full_name ?? null,
+    assignee_email: task.profiles?.email ?? null,
+    profiles: undefined // Remove nested object
+  })) ?? null;
+  
   return { data: data?.map(mapTask) ?? null, error };
 }
 
@@ -495,7 +520,19 @@ export async function addAttachment(
 export async function listTaskDetails(taskId: string) {
   const supabase = await createClient();
   const [taskResult, subtasksResult, commentsResult, attachmentsResult] = await Promise.all([
-    supabase.from("tasks").select("*").eq("id", taskId).single<TaskRow>(),
+    // Phase 6: Include assignee profile data
+    supabase
+      .from("tasks")
+      .select(`
+        *,
+        profiles!assignee_id (
+          id,
+          full_name,
+          email
+        )
+      `)
+      .eq("id", taskId)
+      .single<any>(),
     supabase
       .from("subtasks")
       .select("*")
@@ -516,9 +553,17 @@ export async function listTaskDetails(taskId: string) {
       .returns<AttachmentRow[]>()
   ]);
 
+  // Flatten nested profile data
+  const taskData = taskResult.data ? {
+    ...taskResult.data,
+    assignee_full_name: taskResult.data.profiles?.full_name ?? null,
+    assignee_email: taskResult.data.profiles?.email ?? null,
+    profiles: undefined
+  } : null;
+
   return {
     data: {
-      task: taskResult.data ? mapTask(taskResult.data) : null,
+      task: taskData ? mapTask(taskData) : null,
       subtasks: subtasksResult.data?.map(mapSubtask) ?? [],
       comments: commentsResult.data?.map(mapComment) ?? [],
       attachments: attachmentsResult.data?.map(mapAttachment) ?? []

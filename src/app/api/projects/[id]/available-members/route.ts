@@ -1,12 +1,12 @@
 import { NextResponse } from "next/server";
 import { requireApiActiveProfile } from "@/lib/api-guard";
-import { isProjectAdmin } from "@/lib/access-control";
+import { isAssignedToProject } from "@/lib/access-control";
 import { createClient } from "@/lib/supabase/server";
 
 /**
  * GET /api/projects/[id]/available-members
  * List all users in system who are NOT yet members of this project
- * Admin only
+ * Phase 5: All project members can view available members
  */
 export async function GET(
   _request: Request,
@@ -19,10 +19,11 @@ export async function GET(
 
   const { id: projectId } = await context.params;
 
-  const isAdmin = await isProjectAdmin(projectId, profileResult.profile.id);
-  if (!isAdmin) {
+  // Phase 5: Verify user is project member
+  const isMember = await isAssignedToProject(projectId, profileResult.profile.id);
+  if (!isMember) {
     return NextResponse.json(
-      { error: "Only admins can add members" },
+      { error: "User is not a member of this project" },
       { status: 403 }
     );
   }

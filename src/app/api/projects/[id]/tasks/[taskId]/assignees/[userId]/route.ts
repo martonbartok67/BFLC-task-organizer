@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { requireApiActiveProfile } from "@/lib/api-guard";
-import { isProjectAdmin } from "@/lib/access-control";
+import { isAssignedToProject } from "@/lib/access-control";
 import { createClient } from "@/lib/supabase/server";
 import { logActivity } from "@/lib/data-access";
 
@@ -19,10 +19,11 @@ export async function DELETE(
 
   const { id: projectId, taskId, userId } = await context.params;
 
-  const isAdmin = await isProjectAdmin(projectId, profileResult.profile.id);
-  if (!isAdmin) {
+  // Phase 5: Verify actor is project member
+  const isActorMember = await isAssignedToProject(projectId, profileResult.profile.id);
+  if (!isActorMember) {
     return NextResponse.json(
-      { error: "Only admins can remove assignees" },
+      { error: "User is not a member of this project" },
       { status: 403 }
     );
   }
