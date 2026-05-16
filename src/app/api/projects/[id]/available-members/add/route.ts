@@ -1,13 +1,12 @@
 import { NextResponse } from "next/server";
 import { requireApiActiveProfile } from "@/lib/api-guard";
-import { isProjectAdmin } from "@/lib/access-control";
 import { createClient } from "@/lib/supabase/server";
 import { logActivity } from "@/lib/data-access";
 
 /**
- * POST /api/projects/[id]/available-members
- * Add a user to the project as a member
- * Admin only
+ * POST /api/projects/[id]/available-members/add
+ * Add a user to the project
+ * Single-team model: everyone can add members
  */
 export async function POST(
   request: Request,
@@ -24,14 +23,6 @@ export async function POST(
 
   if (!userId) {
     return NextResponse.json({ error: "userId required" }, { status: 400 });
-  }
-
-  const isAdmin = await isProjectAdmin(projectId, profileResult.profile.id);
-  if (!isAdmin) {
-    return NextResponse.json(
-      { error: "Only admins can add members" },
-      { status: 403 }
-    );
   }
 
   const supabase = await createClient();
@@ -73,16 +64,16 @@ export async function POST(
     );
   }
 
-  // Add member
+  // Add member (assigned_at will be set by database default)
   const { error: insertError } = await supabase
     .from("project_assignments")
     .insert({
       project_id: projectId,
-      user_id: userId,
-  
+      user_id: userId
     });
 
   if (insertError) {
+    console.error("Insert error:", insertError);
     return NextResponse.json(
       { error: "Failed to add member" },
       { status: 500 }

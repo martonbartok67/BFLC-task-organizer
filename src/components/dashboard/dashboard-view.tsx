@@ -39,9 +39,8 @@ export function DashboardView({ initialProjectId }: { initialProjectId?: string 
   const [projectName, setProjectName] = useState("");
   const [projectDescription, setProjectDescription] = useState("");
   const [drawerTaskId, setDrawerTaskId] = useState<string | null>(null);
-  // Phase 2A: View mode and user role
+  // Phase 2A: View mode
   const [viewMode, setViewMode] = useState<"board" | "members">("board");
-  const [userRole, setUserRole] = useState<"admin" | "member" | null>(null);
 
   async function loadProjects() {
     const response = await fetch("/api/projects");
@@ -68,8 +67,6 @@ export function DashboardView({ initialProjectId }: { initialProjectId?: string 
       throw new Error(payload.error ?? "Could not load board.");
     }
     setBoardData(payload.data as BoardPayload);
-    // Phase 2A: Set user role from response
-    setUserRole(payload.data?.userRole ?? null);
     setLoadingBoard(false);
   }
 
@@ -276,7 +273,6 @@ export function DashboardView({ initialProjectId }: { initialProjectId?: string 
           ) : (
             <MembersManagement
               projectId={selectedProjectId}
-              userRole={userRole}
             />
           )}
         </section>

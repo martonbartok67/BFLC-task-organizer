@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { requireApiActiveProfile } from "@/lib/api-guard";
-import { isProjectMember, isGlobalAdmin } from "@/lib/access-control";
+import { isProjectMember } from "@/lib/access-control";
 import { createClient } from "@/lib/supabase/server";
 
 export async function GET(
@@ -27,7 +27,7 @@ export async function GET(
   // Get all assignments for this project
   const { data: assignments, error } = await supabase
     .from("project_assignments")
-    .select(`id, user_id, assigned_at, profiles:user_id(id, email, full_name, is_admin)`)
+    .select(`id, user_id, assigned_at, profiles:user_id(id, email, full_name)`)
     .eq("project_id", projectId)
     .order("assigned_at", { ascending: true });
 
@@ -40,7 +40,6 @@ export async function GET(
     userId: m.user_id,
     userName: m.profiles?.full_name || m.profiles?.email,
     userEmail: m.profiles?.email,
-    role: m.profiles?.is_admin ? "admin" : "member",
     joinedAt: m.assigned_at
   })) ?? [];
 

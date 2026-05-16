@@ -3,9 +3,8 @@
 import type React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { BarChart3, CalendarDays, ClipboardList, FolderKanban, UserCheck, ShieldAlert, Users } from "lucide-react";
+import { BarChart3, CalendarDays, ClipboardList, FolderKanban, UserCheck } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { useEffect, useState } from "react";
 
 const navItems = [
   { href: "/dashboard", label: "Dashboard", icon: FolderKanban },
@@ -17,27 +16,6 @@ const navItems = [
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
-
-  useEffect(() => {
-    const fetchAdminStatus = async () => {
-      try {
-        const response = await fetch("/api/user/admin-status");
-        if (response.ok) {
-          const data = await response.json();
-          console.log("Admin status fetched:", data.data);
-          setIsAdmin(data.data?.isAdmin ?? false);
-          console.log("isAdmin state set to:", data.data?.isAdmin);
-        } else {
-          console.error("Admin status API returned non-ok status:", response.status);
-        }
-      } catch (error) {
-        console.error("Failed to fetch admin status:", error);
-      }
-    };
-
-    fetchAdminStatus();
-  }, []);
 
   return (
     <div className="min-h-screen">
@@ -92,67 +70,14 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 </Link>
               );
             })}
-
-            {isAdmin && (
-              <div className="pt-2 mt-2 border-t border-flc-border">
-                <Link
-                  href="/admin"
-                  className={cn(
-                    "flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition-all",
-                    pathname.startsWith("/admin")
-                      ? "bg-amber-100 text-amber-900 shadow-panel"
-                      : "text-amber-700 hover:bg-amber-50"
-                  )}
-                >
-                  <Users size={17} />
-                  <span>User Management</span>
-                </Link>
-              </div>
-            )}
           </nav>
 
-          <div className="mt-auto space-y-4">
-            {/* DEBUG: Show admin status state */}
-            <div className="rounded-xl border border-red-300 bg-red-50 p-3">
-              <p className="text-xs text-red-600">
-                <strong>DEBUG:</strong> isAdmin = {String(isAdmin)}
-              </p>
-            </div>
-
-            {isAdmin !== null && (
-              <div className={cn(
-                "rounded-xl border p-4 transition-all",
-                isAdmin 
-                  ? "border-amber-200 bg-gradient-to-br from-amber-50 to-orange-50" 
-                  : "border-flc-border bg-flc-panel-muted"
-              )}>
-                <div className="flex items-center gap-2">
-                  {isAdmin && <ShieldAlert size={16} className="text-amber-600" />}
-                  <p className={cn(
-                    "text-xs font-semibold uppercase tracking-wider",
-                    isAdmin ? "text-amber-700" : "text-flc-text-muted"
-                  )}>
-                    {isAdmin ? "Admin Access" : "Member"}
-                  </p>
-                </div>
-                {isAdmin && (
-                  <Link
-                    href="/admin"
-                    className="mt-3 block text-xs font-medium text-amber-600 hover:text-amber-700 transition-colors"
-                  >
-                    → Manage Users
-                  </Link>
-                )}
-              </div>
-            )}
-            
-            <div className="rounded-xl border border-flc-border bg-flc-panel-muted p-4">
-              <p className="text-xs uppercase tracking-widest text-flc-text-muted">Workspace</p>
-              <p className="mt-2 text-sm font-semibold text-flc-text">Single Team Instance</p>
-              <p className="mt-1 text-xs text-flc-text-muted">
-                Keep workflows focused, traceable, and collaborative.
-              </p>
-            </div>
+          <div className="mt-auto rounded-xl border border-flc-border bg-flc-panel-muted p-4">
+            <p className="text-xs uppercase tracking-widest text-flc-text-muted">Workspace</p>
+            <p className="mt-2 text-sm font-semibold text-flc-text">Single Team Instance</p>
+            <p className="mt-1 text-xs text-flc-text-muted">
+              Keep workflows focused, traceable, and collaborative.
+            </p>
           </div>
         </aside>
 

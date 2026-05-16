@@ -12,28 +12,13 @@ export function resolveAccessDecision(decision: "approve" | "reject"): {
 }
 
 /**
- * Check if user is global admin
- * Admins can access/edit all projects and tasks
+ * PHASE 5: SIMPLIFIED ACCESS CONTROL
+ * Single-team model: Everyone has full access to all projects and tasks
+ * No role-based restrictions
  */
-export async function isGlobalAdmin(userId: string): Promise<boolean> {
-  const supabase = await createClient();
-  
-  const { data, error } = await supabase
-    .from("profiles")
-    .select("is_admin")
-    .eq("id", userId)
-    .maybeSingle<{ is_admin: boolean }>();
-
-  if (error || !data) {
-    return false;
-  }
-
-  return data.is_admin === true;
-}
 
 /**
  * Check if user is assigned to a project
- * Members can see projects they're assigned to
  */
 export async function isAssignedToProject(
   projectId: string,
@@ -57,37 +42,36 @@ export async function isAssignedToProject(
 
 /**
  * Check if user can view/access a project
- * Admins can view all projects
- * Members can view only assigned projects
+ * Single-team: everyone can view all projects
  */
 export async function canViewProject(
   projectId: string,
   userId: string
 ): Promise<boolean> {
-  const [isAdmin, isAssigned] = await Promise.all([
-    isGlobalAdmin(userId),
-    isAssignedToProject(projectId, userId)
+  const supabase = await createClient();
+  
+  // Just verify project exists and user exists
+  const [project, user] = await Promise.all([
+    supabase.from("projects").select("id").eq("id", projectId).maybeSingle(),
+    supabase.from("profiles").select("id").eq("id", userId).maybeSingle()
   ]);
 
-  return isAdmin || isAssigned;
+  return !!(project.data && user.data);
 }
 
 /**
  * Check if user can edit/move tasks in a project
- * Only admins can edit tasks
- * Members can only view tasks in assigned projects
+ * Single-team: everyone can edit all tasks
  */
 export async function canEditTaskInProject(
   projectId: string,
   userId: string
 ): Promise<boolean> {
-  // Only global admins can edit tasks
-  return isGlobalAdmin(userId);
+  return canViewProject(projectId, userId);
 }
 
 /**
  * Check if user is creator of project
- * Used for initial project setup
  */
 export async function isProjectCreator(
   projectId: string,
@@ -110,36 +94,30 @@ export async function isProjectCreator(
 
 /**
  * Get user's effective role in a project
- * Phase 3: Global admins = "admin", assigned members = "member", else null
+ * Single-team: everyone is "member"
  */
 export async function getUserRoleInProject(
   projectId: string,
   userId: string
 ): Promise<"admin" | "member" | null> {
-  const [adminStatus, assigned] = await Promise.all([
-    isGlobalAdmin(userId),
-    isAssignedToProject(projectId, userId)
-  ]);
-
-  if (adminStatus) return "admin";
-  if (assigned) return "member";
-  return null;
+  const canView = await canViewProject(projectId, userId);
+  return canView ? "member" : null;
 }
 
 /**
- * Check if user is admin in project
- * Phase 3: Global admin = project admin
+ * Check if user can manage a project
+ * Single-team: everyone can manage
  */
 export async function isProjectAdmin(
   projectId: string,
   userId: string
 ): Promise<boolean> {
-  return isGlobalAdmin(userId);
+  return canViewProject(projectId, userId);
 }
 
 /**
- * Check if user is member (or admin) in project
- * Phase 3: Global admin OR assigned to project
+ * Check if user is member in project
+ * Single-team: everyone is a member
  */
 export async function isProjectMember(
   projectId: string,
