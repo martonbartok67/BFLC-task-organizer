@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { requireApiActiveProfile } from "@/lib/api-guard";
 import { logActivity, moveTask } from "@/lib/data-access";
 import { taskMoveSchema } from "@/lib/validation";
-import { getUserRoleInProject } from "@/lib/access-control";
+import { isAssignedToProject } from "@/lib/access-control";
 import { createClient } from "@/lib/supabase/server";
 
 export async function POST(
@@ -24,30 +24,21 @@ export async function POST(
     return NextResponse.json({ error: "Payload task id mismatch" }, { status: 400 });
   }
 
-  // Phase 2A: Check permissions
+  // Phase 5: Single-team model - verify user is project member
   const supabase = await createClient();
   const { data: task, error: taskError } = await supabase
     .from("tasks")
-    .select("project_id, assignee_id")
+    .select("project_id")
     .eq("id", id)
-    .single<{ project_id: string; assignee_id: string | null }>();
+    .single<{ project_id: string }>();
 
   if (taskError || !task) {
     return NextResponse.json({ error: "Task not found" }, { status: 404 });
   }
 
-  const userRole = await getUserRoleInProject(task.project_id, profileResult.profile.id);
-  
-  // Members can only move their own tasks
-  if (userRole === "member" && task.assignee_id !== profileResult.profile.id) {
-    return NextResponse.json(
-      { error: "Members can only move their own tasks" },
-      { status: 403 }
-    );
-  }
-
-  // Non-members cannot move tasks
-  if (userRole === null) {
+  // Verify user is project member
+  const isMember = await isAssignedToProject(task.project_id, profileResult.profile.id);
+  if (!isMember) {
     return NextResponse.json(
       { error: "User is not a member of this project" },
       { status: 403 }
