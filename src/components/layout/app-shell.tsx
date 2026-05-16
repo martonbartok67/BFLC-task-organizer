@@ -25,7 +25,11 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         const response = await fetch("/api/user/admin-status");
         if (response.ok) {
           const data = await response.json();
+          console.log("Admin status fetched:", data.data);
           setIsAdmin(data.data?.isAdmin ?? false);
+          console.log("isAdmin state set to:", data.data?.isAdmin);
+        } else {
+          console.error("Admin status API returned non-ok status:", response.status);
         }
       } catch (error) {
         console.error("Failed to fetch admin status:", error);
@@ -108,6 +112,13 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           </nav>
 
           <div className="mt-auto space-y-4">
+            {/* DEBUG: Show admin status state */}
+            <div className="rounded-xl border border-red-300 bg-red-50 p-3">
+              <p className="text-xs text-red-600">
+                <strong>DEBUG:</strong> isAdmin = {String(isAdmin)}
+              </p>
+            </div>
+
             {isAdmin !== null && (
               <div className={cn(
                 "rounded-xl border p-4 transition-all",
