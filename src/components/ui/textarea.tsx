@@ -10,11 +10,13 @@ export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(fun
   return (
     <textarea
       ref={ref}
+      // Phase 8: Beautify - smooth transitions, better focus states
       className={cn(
-        "w-full rounded-lg border border-flc-border bg-white px-3 py-2 text-sm text-flc-text placeholder:text-flc-text-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgba(0,5,71,0.35)]",
+        "w-full rounded-lg border border-flc-border bg-white px-3 py-2 text-sm text-flc-text placeholder:text-flc-text-muted transition-all duration-300 hover:border-flc-primary/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-flc-primary/20 focus-visible:border-flc-primary",
         className
       )}
       {...props}
     />
   );
 });
+Textarea.displayName = "Textarea";
