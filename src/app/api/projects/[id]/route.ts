@@ -2,7 +2,6 @@ import { NextResponse } from "next/server";
 import { requireApiActiveProfile } from "@/lib/api-guard";
 import { getProjectBoard, updateProject } from "@/lib/data-access";
 import { projectUpdateSchema } from "@/lib/validation";
-import { getUserRoleInProject } from "@/lib/access-control";
 
 export async function GET(
   _request: Request,
@@ -22,31 +21,16 @@ export async function GET(
     return NextResponse.json({ error: "Project not found" }, { status: 404 });
   }
 
-  // Phase 2A: Filter tasks based on user role
-  const userRole = await getUserRoleInProject(id, profileResult.profile.id);
-  
-  let filteredTasks = data.tasks;
-  if (userRole === "member") {
-    // Members see only: own assigned tasks + unassigned tasks
-    filteredTasks = data.tasks.filter(
-      (task) =>
-        task.assigneeId === profileResult.profile.id ||
-        task.assigneeId === null
-    );
-  }
-
-  // Add UI helper fields
-  const tasksWithHelpers = filteredTasks.map((task) => ({
+  // Phase 5: Single-team model - all members see all tasks
+  const tasksWithHelpers = data.tasks.map((task) => ({
     ...task,
-    isUnassigned: task.assigneeId === null,
-    canClaim: userRole === "member" && task.assigneeId === null
+    isUnassigned: task.assigneeId === null
   }));
 
   return NextResponse.json({
     data: {
       ...data,
-      tasks: tasksWithHelpers,
-      userRole
+      tasks: tasksWithHelpers
     }
   });
 }
