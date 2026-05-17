@@ -13,15 +13,21 @@ export function SectionHeader({
   className?: string;
 }) {
   return (
-    <div className={cn("mb-5 flex flex-wrap items-start justify-between gap-4", className)}>
+    <div className={cn("mb-6 flex flex-wrap items-start justify-between gap-4", className)}>
       <div className="flex-1">
-        {/* Phase 8: Beautify - gradient text effect on title */}
-        <h2 className="bg-gradient-to-r from-flc-primary via-flc-primary to-flc-primary-strong bg-clip-text text-2xl font-semibold tracking-tight text-transparent">
-          {title}
-        </h2>
-        {subtitle ? <p className="mt-1 text-sm text-flc-text-muted">{subtitle}</p> : null}
+        {/* Phase 9: Bolder headers - larger, stronger gradient, accent underline */}
+        <div className="relative inline-block">
+          <h2 className="bg-gradient-to-r from-flc-primary via-[#0a3f9f] to-flc-primary-strong bg-clip-text text-3xl font-bold tracking-tight text-transparent">
+            {title}
+          </h2>
+          {/* Accent underline */}
+          <div className="absolute bottom-0 left-0 h-1 bg-gradient-to-r from-flc-primary to-flc-primary-strong rounded-full animate-fadeInUp" 
+            style={{ width: "40%" }}
+          />
+        </div>
+        {subtitle ? <p className="mt-3 text-base text-flc-text-muted font-medium">{subtitle}</p> : null}
       </div>
-      {actions ? <div className="flex items-center gap-2">{actions}</div> : null}
+      {actions ? <div className="flex items-center gap-3">{actions}</div> : null}
     </div>
   );
 }

@@ -87,8 +87,11 @@ export function KanbanBoard({
         return (
           <section
             key={column.id}
-            // Phase 8: Beautify - gradient background, improved shadows
-            className="flex h-[50vh] w-full md:h-[70vh] md:min-w-[300px] md:max-w-[320px] flex-col rounded-xl border border-flc-border bg-gradient-to-br from-flc-panel-muted to-slate-100/50 p-3 shadow-subtle hover:shadow-panel transition-all duration-300"
+            // Phase 9: Bold animations - slide-in with stagger, glow on hover
+            className="flex h-[50vh] w-full md:h-[70vh] md:min-w-[300px] md:max-w-[320px] flex-col rounded-xl border border-flc-border bg-gradient-to-br from-flc-panel-muted to-slate-100/50 p-3 shadow-subtle hover:shadow-panel transition-all duration-300 animate-slideInLeft"
+            style={{
+              animationDelay: `${columns.indexOf(column) * 100}ms`
+            }}
             onDragOver={(event) => event.preventDefault()}
             onDrop={() => handleDrop(column, columnTasks.length)}
           >

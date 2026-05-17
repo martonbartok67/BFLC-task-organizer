@@ -21,8 +21,8 @@ export function TaskCard({
       draggable={draggable}
       onDragStart={() => onDragStart?.(task.id)}
       onClick={onClick}
-      // Phase 8: Beautify - gradients, improved shadows, smooth hover lift
-      className="group w-full rounded-xl border border-flc-border bg-gradient-to-br from-white to-slate-50 p-3 text-left shadow-subtle transition-all duration-300 hover:-translate-y-1 hover:border-flc-primary hover:shadow-lg hover:shadow-flc-primary/10"
+      // Phase 9: Bold animations - fade-in + slide-up on load, scale on hover, glow when dragging
+      className="group w-full rounded-xl border border-flc-border bg-gradient-to-br from-white to-slate-50 p-3 text-left shadow-subtle transition-all duration-300 hover:-translate-y-1 hover:border-flc-primary hover:shadow-lg hover:shadow-flc-primary/10 hover:scale-[1.02] animate-fadeInUp"
     >
       <div className="mb-2 flex items-center justify-between gap-2">
         <p className="line-clamp-2 text-sm font-semibold text-flc-text">{task.title}</p>
