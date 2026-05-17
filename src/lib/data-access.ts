@@ -134,8 +134,8 @@ function mapTask(row: TaskRow): Task {
     createdBy: row.created_by,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
-    // Phase 6: Assignee visibility
-    assigneeName: row.assignee_full_name ? `${row.assignee_full_name} (${row.assignee_email})` : undefined
+    // Phase 6: Assignee visibility - name only
+    assigneeName: row.assignee_full_name ?? undefined
   };
 }
 
