@@ -6,6 +6,9 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { LabelEditor } from "@/components/task/label-editor";
+import { PrioritySelector } from "@/components/task/priority-selector";
+import { DueDatePicker } from "@/components/task/due-date-picker";
 import type { Subtask, Task, TaskAttachment, TaskComment, TaskPriority, TaskStatus } from "@/types/domain";
 
 type TaskDetails = {
@@ -455,26 +458,19 @@ export function TaskDrawer({
 
                 <label className="text-xs font-medium text-flc-text-muted">
                   Priority
-                  <select
+                  <PrioritySelector
                     value={details.task.priority}
-                    onChange={(event) =>
+                    onChange={(priority) =>
                       setDetails((prev) =>
                         prev
                           ? {
                               ...prev,
-                              task: { ...prev.task, priority: event.target.value as TaskPriority }
+                              task: { ...prev.task, priority }
                             }
                           : prev
                       )
                     }
-                    className="mt-1 h-10 w-full rounded-lg border border-flc-border px-3 text-sm"
-                  >
-                    {priorityOptions.map((option) => (
-                      <option key={option.value} value={option.value}>
-                        {option.label}
-                      </option>
-                    ))}
-                  </select>
+                  />
                 </label>
               </div>
 
@@ -564,23 +560,19 @@ export function TaskDrawer({
                     }
                   />
                 </label>
-                <label className="text-xs font-medium text-flc-text-muted">
-                  Due
-                  <Input
-                    type="date"
-                    value={toDateInputValue(details.task.dueDate)}
-                    onChange={(event) =>
-                      setDetails((prev) =>
-                        prev
-                          ? {
-                              ...prev,
-                              task: { ...prev.task, dueDate: fromDateInputValue(event.target.value) }
-                            }
-                          : prev
-                      )
-                    }
-                  />
-                </label>
+                <DueDatePicker
+                  value={details.task.dueDate}
+                  onChange={(dueDate) =>
+                    setDetails((prev) =>
+                      prev
+                        ? {
+                            ...prev,
+                            task: { ...prev.task, dueDate }
+                          }
+                        : prev
+                    )
+                  }
+                />
               </div>
 
               <label className="flex items-center gap-2 text-xs text-flc-text-muted">
@@ -601,6 +593,20 @@ export function TaskDrawer({
                 Mark as milestone
               </label>
 
+              <LabelEditor
+                value={details.task.labels || []}
+                onChange={(labels) =>
+                  setDetails((prev) =>
+                    prev
+                      ? {
+                          ...prev,
+                          task: { ...prev.task, labels }
+                        }
+                      : prev
+                  )
+                }
+              />
+
               <Button
                 className="w-full"
                 onClick={() =>
@@ -611,6 +617,7 @@ export function TaskDrawer({
                     priority: details.task.priority,
                     startDate: details.task.startDate,
                     dueDate: details.task.dueDate,
+                    labels: details.task.labels || [],
                     isMilestone: details.task.isMilestone
                   })
                 }

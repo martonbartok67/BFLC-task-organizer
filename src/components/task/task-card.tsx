@@ -1,6 +1,6 @@
 import { CalendarClock, Flag, Milestone, User } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { PRIORITY_LABELS, PRIORITY_TONE } from "@/lib/constants";
+import { PRIORITY_LABELS, PRIORITY_TONE, LABEL_COLORS } from "@/lib/constants";
 import { formatDate } from "@/lib/utils";
 import type { Task } from "@/types/domain";
 
@@ -55,6 +55,21 @@ export function TaskCard({
           <CalendarClock size={12} />
           <span>{formatDate(task.dueDate)}</span>
         </Badge>
+        {/* Phase 10: Display labels (max 3 visible) */}
+        {task.labels && task.labels.length > 0 && (
+          <>
+            {task.labels.slice(0, 3).map((label) => (
+              <Badge key={label} className={`${LABEL_COLORS[label] || 'bg-gray-100 text-gray-700 border-gray-200'} text-xs capitalize`}>
+                {label}
+              </Badge>
+            ))}
+            {task.labels.length > 3 && (
+              <Badge className="text-xs bg-gray-100 text-gray-700 border-gray-200">
+                +{task.labels.length - 3}
+              </Badge>
+            )}
+          </>
+        )}
       </div>
     </button>
   );

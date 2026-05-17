@@ -21,6 +21,7 @@ function mapTaskPatch(input: Record<string, unknown>): Partial<Task> {
     ...(Object.prototype.hasOwnProperty.call(input, "startDate")
       ? { startDate: (input.startDate as string | null) ?? null }
       : {}),
+    ...(Array.isArray(input.labels) ? { labels: input.labels as string[] } : {}),
     ...(typeof input.columnId === "string" ? { columnId: input.columnId } : {}),
     ...(typeof input.position === "number" ? { position: input.position } : {}),
     ...(typeof input.isMilestone === "boolean" ? { isMilestone: input.isMilestone } : {})

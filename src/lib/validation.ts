@@ -21,6 +21,7 @@ export const taskCreateSchema = z.object({
   assigneeId: z.string().uuid().nullable().optional(),
   dueDate: z.string().datetime().nullable().optional(),
   startDate: z.string().datetime().nullable().optional(),
+  labels: z.array(z.string()).optional(),
   isMilestone: z.boolean().optional()
 });
 

@@ -4,6 +4,17 @@ export type TaskStatus = 'todo' | 'in_progress' | 'done';
 
 export type TaskPriority = "low" | "medium" | "high" | "critical";
 
+export type NotificationType = "due_soon" | "overdue" | "assigned" | "comment";
+
+export interface Notification {
+  id: string;
+  userId: string;
+  taskId: string;
+  type: NotificationType;
+  readAt: string | null;
+  createdAt: string;
+}
+
 export type ActivityType =
   | "project_created"
   | "task_created"
@@ -66,6 +77,7 @@ export interface Task {
   assigneeId: string | null; // Deprecated: kept for Phase 2A compatibility
   dueDate: string | null;
   startDate: string | null;
+  labels: string[]; // Phase 10: Task labels/tags
   position: number;
   isMilestone: boolean;
   createdBy: string;

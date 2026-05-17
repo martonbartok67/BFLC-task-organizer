@@ -426,6 +426,7 @@ function toTaskUpdatePayload(updates: Partial<Task>) {
   if (Object.prototype.hasOwnProperty.call(updates, "position")) payload.position = updates.position;
   if (Object.prototype.hasOwnProperty.call(updates, "isMilestone"))
     payload.is_milestone = updates.isMilestone;
+  if (Object.prototype.hasOwnProperty.call(updates, "labels")) payload.labels = updates.labels;
 
   return payload;
 }
