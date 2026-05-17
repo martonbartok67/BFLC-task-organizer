@@ -272,12 +272,20 @@ export async function getProjectBoard(projectId: string) {
       .eq("project_id", projectId)
       .order("position", { ascending: true })
       .returns<ColumnRow[]>(),
+    // Phase 6: Include assignee profile data (name, email)
     supabase
       .from("tasks")
-      .select("*")
+      .select(`
+        *,
+        profiles!assignee_id (
+          id,
+          full_name,
+          email
+        )
+      `)
       .eq("project_id", projectId)
       .order("position", { ascending: true })
-      .returns<TaskRow[]>()
+      .returns<any[]>()
   ]);
 
   // Phase 2B: Fetch task assignments
@@ -302,11 +310,20 @@ export async function getProjectBoard(projectId: string) {
     });
   });
 
-  const tasks = tasksResult.data?.map((task) => ({
-    ...mapTask(task),
-    assigneeIds: assignmentsByTask.get(task.id)?.map((a) => a.userId),
-    assigneeNames: assignmentsByTask.get(task.id)?.map((a) => a.userName)
-  })) ?? [];
+  // Flatten nested profile data and map tasks
+  const tasks = tasksResult.data?.map((rawTask: any) => {
+    const task = {
+      ...rawTask,
+      assignee_full_name: rawTask.profiles?.full_name ?? null,
+      assignee_email: rawTask.profiles?.email ?? null,
+      profiles: undefined
+    };
+    return {
+      ...mapTask(task),
+      assigneeIds: assignmentsByTask.get(task.id)?.map((a) => a.userId),
+      assigneeNames: assignmentsByTask.get(task.id)?.map((a) => a.userName)
+    };
+  }) ?? [];
 
   return {
     data: {
