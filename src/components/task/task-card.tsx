@@ -1,4 +1,4 @@
-import { CalendarClock, Flag, Milestone } from "lucide-react";
+import { CalendarClock, Flag, Milestone, User } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { PRIORITY_LABELS, PRIORITY_TONE } from "@/lib/constants";
 import { formatDate } from "@/lib/utils";
@@ -38,6 +38,12 @@ export function TaskCard({
         {task.isUnassigned ? (
           <Badge className="gap-1 bg-blue-100 text-blue-700">
             <span>Unassigned</span>
+          </Badge>
+        ) : task.assigneeName ? (
+          // Phase 6: Show assignee name when assigned
+          <Badge className="gap-1 bg-purple-100 text-purple-700">
+            <User size={12} />
+            <span className="truncate">{task.assigneeName}</span>
           </Badge>
         ) : null}
         <Badge tone={PRIORITY_TONE[task.priority]} className="gap-1">
