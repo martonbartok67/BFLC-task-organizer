@@ -77,7 +77,8 @@ export function KanbanBoard({
   }
 
   return (
-    <div className="flc-scroll flex gap-4 overflow-x-auto pb-2">
+    // Phase 7: Mobile responsive - vertical on mobile, horizontal on desktop
+    <div className="flc-scroll flex flex-col overflow-y-auto md:flex-row md:overflow-x-auto md:overflow-y-hidden gap-4 pb-2">
       {columns.map((column) => {
         const columnTasks = tasksByColumn.get(column.id) ?? [];
         const isCreating = Boolean(isCreatingByColumn[column.id]);
@@ -86,7 +87,8 @@ export function KanbanBoard({
         return (
           <section
             key={column.id}
-            className="flex h-[70vh] min-w-[300px] max-w-[320px] flex-col rounded-xl border border-flc-border bg-flc-panel-muted p-3"
+            // Mobile: full width, stacked vertically | Desktop: 300-320px, horizontal
+            className="flex h-[50vh] w-full md:h-[70vh] md:min-w-[300px] md:max-w-[320px] flex-col rounded-xl border border-flc-border bg-flc-panel-muted p-3"
             onDragOver={(event) => event.preventDefault()}
             onDrop={() => handleDrop(column, columnTasks.length)}
           >
