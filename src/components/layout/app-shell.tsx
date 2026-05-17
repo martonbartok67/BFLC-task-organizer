@@ -19,29 +19,13 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="min-h-screen">
+      {/* Phase 7: Mobile header with branding */}
       <div className="panel mx-3 mt-3 p-3 md:hidden">
         <p className="text-xs uppercase tracking-[0.25em] text-slate-500">FLC Task Organizer</p>
-        <nav className="flc-scroll mt-3 flex gap-2 overflow-x-auto">
-          {navItems.map((item) => {
-            const isActive = pathname.startsWith(item.href);
-            return (
-              <Link
-                key={item.href}
-                href={item.href as any} // Add "as any" right here
-                className={cn(
-                  "shrink-0 rounded-lg px-3 py-2 text-xs font-semibold",
-                  isActive
-                    ? "bg-flc-primary text-white"
-                    : "border border-flc-border bg-white text-flc-text-muted"
-                )}
-              >
-                {item.label}
-              </Link>
-            );
-          })}
-        </nav>
       </div>
-      <div className="flex min-h-screen gap-4 px-3 py-4 sm:gap-6 sm:px-6 sm:py-6">
+
+      <div className="flex min-h-screen gap-4 px-3 py-4 pb-24 sm:gap-6 sm:px-6 sm:py-6 md:pb-4">
+        {/* Desktop Sidebar */}
         <aside className="panel hidden w-72 shrink-0 flex-col p-5 md:flex">
           <div className="mb-8">
             <p className="text-xs uppercase tracking-[0.32em] text-slate-500">FLC Team Suite</p>
@@ -81,10 +65,39 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           </div>
         </aside>
 
+        {/* Main Content */}
         <main className="flex-1 overflow-y-auto rounded-[18px] border border-flc-border bg-flc-panel p-4 shadow-panel sm:p-6">
           {children}
         </main>
       </div>
+
+      {/* Phase 7: Elegant Mobile Bottom Tab Bar */}
+      <nav className="fixed bottom-0 left-0 right-0 border-t border-flc-border bg-white/95 backdrop-blur md:hidden">
+        <div className="mx-3 flex items-center justify-around gap-1">
+          {navItems.map((item) => {
+            const Icon = item.icon;
+            const isActive = pathname.startsWith(item.href);
+            return (
+              <Link
+                key={item.href}
+                href={item.href as any}
+                className={cn(
+                  "flex flex-1 flex-col items-center justify-center gap-1 rounded-t-2xl py-3 px-2 text-xs font-medium transition-all duration-200",
+                  isActive
+                    ? "text-flc-primary"
+                    : "text-flc-text-muted hover:text-flc-text"
+                )}
+              >
+                <Icon size={20} />
+                <span className="line-clamp-1">{item.label}</span>
+                {isActive ? (
+                  <div className="absolute bottom-0 h-1 w-12 rounded-full bg-flc-primary" />
+                ) : null}
+              </Link>
+            );
+          })}
+        </div>
+      </nav>
     </div>
   );
 }
