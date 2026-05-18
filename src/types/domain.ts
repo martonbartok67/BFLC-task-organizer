@@ -4,12 +4,13 @@ export type TaskStatus = 'todo' | 'in_progress' | 'done';
 
 export type TaskPriority = "low" | "medium" | "high" | "critical";
 
-export type NotificationType = "due_soon" | "overdue" | "assigned" | "comment";
+export type NotificationType = "due_soon" | "overdue" | "assigned" | "comment" | "event_reminder";
 
 export interface Notification {
   id: string;
   userId: string;
-  taskId: string;
+  taskId: string | null;
+  eventId: string | null;
   type: NotificationType;
   readAt: string | null;
   createdAt: string;
@@ -159,6 +160,24 @@ export interface TaskWithDetails extends Task {
   subtasks: Subtask[];
   comments: TaskComment[];
   attachments: TaskAttachment[];
+}
+
+export interface CalendarEvent {
+  id: string;
+  projectId: string;
+  taskId: string | null;
+  title: string;
+  description: string | null;
+  startTime: string;
+  endTime: string;
+  createdBy: string;
+  createdAt: string;
+  updatedAt: string;
+  memberIds?: string[];
+}
+
+export interface CalendarEventWithMembers extends CalendarEvent {
+  members: Profile[];
 }
 
 export interface ProjectProgressStats {
