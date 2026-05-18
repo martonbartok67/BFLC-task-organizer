@@ -51,6 +51,7 @@ type TaskRow = {
   created_by: string;
   created_at: string;
   updated_at: string;
+  labels?: string[] | null;
 };
 
 type SubtaskRow = {
@@ -135,7 +136,9 @@ function mapTask(row: TaskRow): Task {
     createdAt: row.created_at,
     updatedAt: row.updated_at,
     // Phase 6: Assignee visibility - name only
-    assigneeName: row.assignee_full_name ?? undefined
+    assigneeName: row.assignee_full_name ?? undefined,
+    // Phase 10: Labels for task categorization
+    labels: row.labels ?? []
   };
 }
 
