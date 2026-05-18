@@ -4,19 +4,20 @@ import { getCalendarEventWithMembers } from "@/lib/calendar-events";
 import { createClient } from "@/lib/supabase/server";
 import { logActivity } from "@/lib/data-access";
 
-type Params = {
-  params: {
-    id: string;
-  };
-};
+export async function POST(
+  request: Request, 
+  context: { params: Promise<{ id: string }> }
+) {
+  // Await the dynamic parameters array from Next.js
+  const { id } = await context.params;
 
-export async function POST(request: Request, { params }: Params) {
   const profileResult = await requireApiActiveProfile();
   if ("errorResponse" in profileResult) {
     return profileResult.errorResponse;
   }
 
-  const eventResult = await getCalendarEventWithMembers(params.id);
+  // Used the newly awaited 'id' directly here
+  const eventResult = await getCalendarEventWithMembers(id);
   if (eventResult.error || !eventResult.data) {
     return NextResponse.json({ error: "Event not found" }, { status: 404 });
   }
