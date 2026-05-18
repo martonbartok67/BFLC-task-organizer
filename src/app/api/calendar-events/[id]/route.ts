@@ -7,19 +7,21 @@ import {
   setEventMembers
 } from "@/lib/calendar-events";
 
-type Params = {
-  params: {
+type RouteContext = {
+  params: Promise<{
     id: string;
-  };
+  }>;
 };
 
-export async function GET(request: Request, { params }: Params) {
+export async function GET(request: Request, context: RouteContext) {
+  const { id } = await context.params;
+  
   const profileResult = await requireApiActiveProfile();
   if ("errorResponse" in profileResult) {
     return profileResult.errorResponse;
   }
 
-  const result = await getCalendarEventWithMembers(params.id);
+  const result = await getCalendarEventWithMembers(id);
   if (result.error) {
     return NextResponse.json({ error: "Event not found" }, { status: 404 });
   }
@@ -27,7 +29,9 @@ export async function GET(request: Request, { params }: Params) {
   return NextResponse.json({ data: result.data });
 }
 
-export async function PUT(request: Request, { params }: Params) {
+export async function PUT(request: Request, context: RouteContext) {
+  const { id } = await context.params;
+
   const profileResult = await requireApiActiveProfile();
   if ("errorResponse" in profileResult) {
     return profileResult.errorResponse;
@@ -36,7 +40,7 @@ export async function PUT(request: Request, { params }: Params) {
   const body = await request.json();
   const { title, description, startTime, endTime, taskId, memberIds } = body;
 
-  const updateResult = await updateCalendarEvent(params.id, {
+  const updateResult = await updateCalendarEvent(id, {
     title,
     description,
     startTime,
@@ -50,23 +54,25 @@ export async function PUT(request: Request, { params }: Params) {
 
   // Update members if provided
   if (memberIds && Array.isArray(memberIds)) {
-    const memberResult = await setEventMembers(params.id, memberIds);
+    const memberResult = await setEventMembers(id, memberIds);
     if (memberResult.error) {
       return NextResponse.json({ error: memberResult.error.message }, { status: 500 });
     }
   }
 
-  const result = await getCalendarEventWithMembers(params.id);
+  const result = await getCalendarEventWithMembers(id);
   return NextResponse.json({ data: result.data });
 }
 
-export async function DELETE(request: Request, { params }: Params) {
+export async function DELETE(request: Request, context: RouteContext) {
+  const { id } = await context.params;
+
   const profileResult = await requireApiActiveProfile();
   if ("errorResponse" in profileResult) {
     return profileResult.errorResponse;
   }
 
-  const result = await deleteCalendarEvent(params.id);
+  const result = await deleteCalendarEvent(id);
   if (result.error) {
     return NextResponse.json({ error: result.error.message }, { status: 500 });
   }
