@@ -26,6 +26,7 @@ export default function CalendarPage() {
   const [tasks, setTasks] = useState<CalendarTask[]>([]);
   const [events, setEvents] = useState<CalendarEventWithMembers[]>([]);
   const [teamMembers, setTeamMembers] = useState<Profile[]>([]);
+  const [projectId, setProjectId] = useState<string | null>(null);
   const [month, setMonth] = useState(new Date());
   const [status, setStatus] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -47,7 +48,19 @@ export default function CalendarPage() {
   }
 
   async function loadEvents() {
-    const response = await fetch("/api/calendar-events");
+    // Get user's first project to use as default
+    const projectsResponse = await fetch("/api/projects");
+    const projectsPayload = await projectsResponse.json();
+    
+    if (!projectsResponse.ok || !projectsPayload.data || projectsPayload.data.length === 0) {
+      setError("No projects found. Please create or join a project first.");
+      return;
+    }
+
+    const pid = projectsPayload.data[0].id;
+    setProjectId(pid);
+
+    const response = await fetch(`/api/calendar-events?projectId=${pid}`);
     const payload = await response.json();
     if (!response.ok) {
       setError(payload.error ?? "Could not load events.");
@@ -98,8 +111,13 @@ export default function CalendarPage() {
   }
 
   async function handleCreateEvent(data: Omit<CalendarEvent, "id" | "createdBy" | "createdAt" | "updatedAt">) {
+    if (!projectId) {
+      setError("No project selected");
+      return;
+    }
+
     try {
-      const response = await fetch("/api/calendar-events", {
+      const response = await fetch(`/api/calendar-events?projectId=${projectId}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

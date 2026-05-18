@@ -1,20 +1,22 @@
 import { NextResponse } from "next/server";
 import { requireApiActiveProfile } from "@/lib/api-guard";
 import { listCalendarEvents, createCalendarEvent } from "@/lib/calendar-events";
-import { getActiveProject } from "@/lib/data-access";
+import { listProjects } from "@/lib/data-access";
 
-export async function GET() {
+export async function GET(request: Request) {
   const profileResult = await requireApiActiveProfile();
   if ("errorResponse" in profileResult) {
     return profileResult.errorResponse;
   }
 
-  const projectResult = await getActiveProject();
-  if (projectResult.error || !projectResult.data) {
-    return NextResponse.json({ error: "No active project" }, { status: 400 });
+  const { searchParams } = new URL(request.url);
+  const projectId = searchParams.get("projectId");
+
+  if (!projectId) {
+    return NextResponse.json({ error: "projectId is required" }, { status: 400 });
   }
 
-  const result = await listCalendarEvents(projectResult.data.id);
+  const result = await listCalendarEvents(projectId);
   if (result.error) {
     return NextResponse.json({ error: result.error.message }, { status: 500 });
   }
@@ -28,9 +30,11 @@ export async function POST(request: Request) {
     return profileResult.errorResponse;
   }
 
-  const projectResult = await getActiveProject();
-  if (projectResult.error || !projectResult.data) {
-    return NextResponse.json({ error: "No active project" }, { status: 400 });
+  const { searchParams } = new URL(request.url);
+  const projectId = searchParams.get("projectId");
+
+  if (!projectId) {
+    return NextResponse.json({ error: "projectId is required" }, { status: 400 });
   }
 
   const body = await request.json();
@@ -44,7 +48,7 @@ export async function POST(request: Request) {
   }
 
   const result = await createCalendarEvent({
-    projectId: projectResult.data.id,
+    projectId,
     createdBy: profileResult.profile.id,
     title,
     description: description ?? null,
