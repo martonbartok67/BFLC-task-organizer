@@ -629,18 +629,20 @@ export function TaskDrawer({
 
               <Button
                 className="w-full"
-                onClick={() =>
-                  patchTask({
+                onClick={() => {
+                  const patch: Partial<Task> = {
                     title: details.task.title,
-                    description: details.task.description,
+                    description: details.task.description || null,
                     status: details.task.status,
-                    priority: details.task.priority,
-                    startDate: details.task.startDate,
-                    dueDate: details.task.dueDate,
+                    priority: details.task.priority || "medium",
+                    assigneeId: details.task.assigneeId || null,
+                    startDate: details.task.startDate || null,
+                    dueDate: details.task.dueDate || null,
                     labels: details.task.labels || [],
-                    isMilestone: details.task.isMilestone
-                  })
-                }
+                    isMilestone: details.task.isMilestone ?? false
+                  };
+                  patchTask(patch);
+                }}
                 disabled={saving}
               >
                 {saving ? "Saving..." : "Save Task"}
