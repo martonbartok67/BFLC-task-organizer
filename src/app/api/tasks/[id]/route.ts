@@ -57,25 +57,41 @@ export async function PATCH(
     return profileResult.errorResponse;
   }
 
-  const payload = await request.json().catch(() => ({}));
-  const parsed = taskUpdateSchema.safeParse(payload);
-  if (!parsed.success) {
-    return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 });
+  try {
+    const payload = await request.json().catch(() => ({}));
+    const parsed = taskUpdateSchema.safeParse(payload);
+    if (!parsed.success) {
+      console.error("Task update validation error:", parsed.error.flatten());
+      return NextResponse.json(
+        { 
+          error: "Validation error",
+          details: parsed.error.flatten()
+        }, 
+        { status: 400 }
+      );
+    }
+
+    const { id } = await context.params;
+    const { data, error } = await updateTask(id, mapTaskPatch(parsed.data as Record<string, unknown>));
+    if (error || !data) {
+      console.error("Task update failed:", error);
+      return NextResponse.json({ error: error?.message ?? "Task not found" }, { status: 404 });
+    }
+
+    await logActivity({
+      actorId: profileResult.profile.id,
+      activityType: "task_updated",
+      message: `updated task ${data.title}`,
+      projectId: data.projectId,
+      taskId: data.id
+    });
+
+    return NextResponse.json({ data });
+  } catch (err) {
+    console.error("Task PATCH exception:", err);
+    return NextResponse.json(
+      { error: "Server error", details: err instanceof Error ? err.message : "Unknown error" },
+      { status: 500 }
+    );
   }
-
-  const { id } = await context.params;
-  const { data, error } = await updateTask(id, mapTaskPatch(parsed.data as Record<string, unknown>));
-  if (error || !data) {
-    return NextResponse.json({ error: error?.message ?? "Task not found" }, { status: 404 });
-  }
-
-  await logActivity({
-    actorId: profileResult.profile.id,
-    activityType: "task_updated",
-    message: `updated task ${data.title}`,
-    projectId: data.projectId,
-    taskId: data.id
-  });
-
-  return NextResponse.json({ data });
 }

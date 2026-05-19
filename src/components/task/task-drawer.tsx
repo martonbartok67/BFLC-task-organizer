@@ -126,30 +126,50 @@ export function TaskDrawer({
 
   async function patchTask(patch: Partial<Task>) {
     if (!taskId || !details) {
+      console.error("Missing taskId or details");
       return;
     }
     setSaving(true);
     setError(null);
-    const response = await fetch(`/api/tasks/${taskId}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(patch)
-    });
-    const payload = await response.json();
-    if (!response.ok) {
-      setError(payload.error ?? "Could not update task.");
-    } else {
-      setDetails((prev) =>
-        prev
-          ? {
-              ...prev,
-              task: payload.data
-            }
-          : prev
-      );
-      await onTaskChanged();
+    try {
+      const response = await fetch(`/api/tasks/${taskId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(patch)
+      });
+      
+      if (!response.ok) {
+        console.error(`Patch failed with status ${response.status}`);
+      }
+      
+      const payload = await response.json();
+      
+      if (!response.ok) {
+        const errorMessage = typeof payload.error === 'string' 
+          ? payload.error 
+          : typeof payload.error === 'object'
+          ? JSON.stringify(payload.error)
+          : "Could not update task.";
+        console.error("Patch error:", errorMessage);
+        setError(errorMessage);
+      } else {
+        setDetails((prev) =>
+          prev
+            ? {
+                ...prev,
+                task: payload.data
+              }
+            : prev
+        );
+        await onTaskChanged();
+      }
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Network error";
+      console.error("Patch exception:", message);
+      setError(`Error: ${message}`);
+    } finally {
+      setSaving(false);
     }
-    setSaving(false);
   }
 
   async function createComment() {
