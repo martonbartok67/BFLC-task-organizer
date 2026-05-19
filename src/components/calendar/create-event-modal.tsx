@@ -29,7 +29,7 @@ export function CreateEventModal({
   const [error, setError] = useState<string | null>(null);
 
   // Initialize datetime on modal open with selected date
-  React.useEffect(() => {
+  useEffect(() => {
     if (isOpen && selectedDate) {
       const dateStr = selectedDate.toISOString().split("T")[0];
       setStartTime(`${dateStr}T09:00`);
