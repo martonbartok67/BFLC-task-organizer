@@ -22,15 +22,20 @@ export function CreateEventModal({
 }: CreateEventModalProps) {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [startTime, setStartTime] = useState(
-    selectedDate ? selectedDate.toISOString().split("T")[0] : ""
-  );
-  const [endTime, setEndTime] = useState(
-    selectedDate ? selectedDate.toISOString().split("T")[0] : ""
-  );
+  const [startTime, setStartTime] = useState("");
+  const [endTime, setEndTime] = useState("");
   const [selectedMembers, setSelectedMembers] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Initialize datetime on modal open with selected date
+  React.useEffect(() => {
+    if (isOpen && selectedDate) {
+      const dateStr = selectedDate.toISOString().split("T")[0];
+      setStartTime(`${dateStr}T09:00`);
+      setEndTime(`${dateStr}T10:00`);
+    }
+  }, [isOpen, selectedDate]);
 
   if (!isOpen) return null;
 
@@ -46,8 +51,9 @@ export function CreateEventModal({
         return;
       }
 
-      const startDateTime = new Date(startTime).toISOString();
-      const endDateTime = new Date(endTime).toISOString();
+      // Parse datetime-local format (YYYY-MM-DDTHH:mm)
+      const startDateTime = new Date(startTime + ":00Z").toISOString();
+      const endDateTime = new Date(endTime + ":00Z").toISOString();
 
       if (new Date(endDateTime) <= new Date(startDateTime)) {
         setError("End time must be after start time");
@@ -127,29 +133,28 @@ export function CreateEventModal({
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <label className="block text-sm font-medium text-flc-text mb-1">
-                Start Date *
-              </label>
-              <input
-                type="date"
-                value={startTime}
-                onChange={(e) => setStartTime(e.target.value)}
-                className="w-full rounded border border-flc-border bg-white px-3 py-2 text-sm text-flc-text focus:border-flc-accent focus:outline-none"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-flc-text mb-1">
-                End Date *
-              </label>
-              <input
-                type="date"
-                value={endTime}
-                onChange={(e) => setEndTime(e.target.value)}
-                className="w-full rounded border border-flc-border bg-white px-3 py-2 text-sm text-flc-text focus:border-flc-accent focus:outline-none"
-              />
-            </div>
+          <div>
+            <label className="block text-sm font-medium text-flc-text mb-1">
+              Start Date & Time *
+            </label>
+            <input
+              type="datetime-local"
+              value={startTime}
+              onChange={(e) => setStartTime(e.target.value)}
+              className="w-full rounded border border-flc-border bg-white px-3 py-2 text-sm text-flc-text focus:border-flc-accent focus:outline-none"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-flc-text mb-1">
+              End Date & Time *
+            </label>
+            <input
+              type="datetime-local"
+              value={endTime}
+              onChange={(e) => setEndTime(e.target.value)}
+              className="w-full rounded border border-flc-border bg-white px-3 py-2 text-sm text-flc-text focus:border-flc-accent focus:outline-none"
+            />
           </div>
 
           <div>

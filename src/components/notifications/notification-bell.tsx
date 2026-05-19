@@ -7,10 +7,15 @@ import { Button } from "@/components/ui/button";
 import type { Notification } from "@/types/domain";
 import { getRelativeTime, getNotificationStyle, getNotificationMessage, markNotificationAsRead, deleteNotification } from "@/lib/notifications";
 
+interface NotificationWithTitle extends Notification {
+  title?: string;
+}
+
 export function NotificationBell() {
-  const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [notifications, setNotifications] = useState<NotificationWithTitle[]>([]);
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [titlesLoading, setTitlesLoading] = useState(false);
 
   // Fetch notifications on mount and set up polling
   useEffect(() => {
@@ -25,12 +30,62 @@ export function NotificationBell() {
       const response = await fetch("/api/notifications");
       if (response.ok) {
         const data = await response.json();
-        setNotifications(data.data || []);
+        const notifs = data.data || [];
+        setNotifications(notifs);
+        
+        // Fetch titles for tasks and events
+        if (notifs.length > 0) {
+          await fetchTitles(notifs);
+        }
       }
     } catch (error) {
       console.error("Failed to fetch notifications:", error);
     } finally {
       setLoading(false);
+    }
+  }
+
+  async function fetchTitles(notifs: NotificationWithTitle[]) {
+    try {
+      setTitlesLoading(true);
+      const updated = await Promise.all(
+        notifs.map(async (notif) => {
+          if (notif.title) return notif; // Already has title
+
+          // Fetch task title if taskId exists
+          if (notif.taskId) {
+            try {
+              const response = await fetch(`/api/tasks?id=${notif.taskId}`);
+              if (response.ok) {
+                const data = await response.json();
+                return { ...notif, title: data.data?.title || "Unknown" };
+              }
+            } catch (e) {
+              console.error("Failed to fetch task title:", e);
+            }
+          }
+
+          // Fetch event title if eventId exists
+          if (notif.eventId) {
+            try {
+              const response = await fetch(`/api/calendar-events/${notif.eventId}`);
+              if (response.ok) {
+                const data = await response.json();
+                return { ...notif, title: data.data?.title || "Unknown" };
+              }
+            } catch (e) {
+              console.error("Failed to fetch event title:", e);
+            }
+          }
+
+          return { ...notif, title: "Notification" };
+        })
+      );
+      setNotifications(updated);
+    } catch (error) {
+      console.error("Failed to fetch titles:", error);
+    } finally {
+      setTitlesLoading(false);
     }
   }
 
@@ -88,7 +143,7 @@ export function NotificationBell() {
 
           {/* Notifications List */}
           <div className="max-h-96 overflow-y-auto">
-            {loading ? (
+            {loading || titlesLoading ? (
               <div className="p-8 text-center text-flc-text-muted">
                 <p className="text-sm">Loading...</p>
               </div>
@@ -101,6 +156,7 @@ export function NotificationBell() {
                 {notifications.map((notification) => {
                   const style = getNotificationStyle(notification.type);
                   const isRead = !!notification.readAt;
+                  const message = getNotificationMessage(notification.type, notification.title || "Notification");
 
                   return (
                     <div
@@ -122,8 +178,7 @@ export function NotificationBell() {
                               notification.type.replace("_", " ").slice(1)}
                           </p>
                           <p className="text-sm text-flc-text mt-0.5 line-clamp-2">
-                            {/* Placeholder - would need task title from API */}
-                            Task notification
+                            {message}
                           </p>
                           <p className="text-xs text-flc-text-muted mt-1">
                             {getRelativeTime(notification.createdAt)}

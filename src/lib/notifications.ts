@@ -44,6 +44,11 @@ export function getNotificationStyle(type: string) {
       bgColor: "bg-green-100",
       textColor: "text-green-900",
       icon: "💬"
+    },
+    event_reminder: {
+      bgColor: "bg-orange-100",
+      textColor: "text-orange-900",
+      icon: "📅"
     }
   };
 
@@ -97,13 +102,14 @@ export async function deleteNotification(notificationId: string): Promise<boolea
 /**
  * Get notification message based on type
  */
-export function getNotificationMessage(type: string, taskTitle: string): string {
+export function getNotificationMessage(type: string, title: string): string {
   const messages: Record<string, string> = {
-    due_soon: `"${taskTitle}" is due soon`,
-    overdue: `"${taskTitle}" is overdue`,
-    assigned: `You were assigned to "${taskTitle}"`,
-    comment: `New comment on "${taskTitle}"`
+    due_soon: `"${title}" is due soon`,
+    overdue: `"${title}" is overdue`,
+    assigned: `You were assigned to "${title}"`,
+    comment: `New comment on "${title}"`,
+    event_reminder: `"${title}" is coming up - be prepared!`
   };
 
-  return messages[type] || taskTitle;
+  return messages[type] || title;
 }
