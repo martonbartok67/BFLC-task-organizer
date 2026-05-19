@@ -145,12 +145,31 @@ export function TaskDrawer({
       const payload = await response.json();
       
       if (!response.ok) {
-        const errorMessage = typeof payload.error === 'string' 
-          ? payload.error 
-          : typeof payload.error === 'object'
-          ? JSON.stringify(payload.error)
-          : "Could not update task.";
-        console.error("Patch error:", errorMessage);
+        let errorMessage = "Could not update task.";
+        
+        if (payload.error) {
+          errorMessage = payload.error;
+          
+          // If there are validation details, append them
+          if (payload.details) {
+            const details = payload.details;
+            const fieldErrors: string[] = [];
+            
+            if (details.fieldErrors) {
+              Object.entries(details.fieldErrors).forEach(([field, errors]: [string, any]) => {
+                if (Array.isArray(errors) && errors.length > 0) {
+                  fieldErrors.push(`${field}: ${errors[0]}`);
+                }
+              });
+            }
+            
+            if (fieldErrors.length > 0) {
+              errorMessage = `Validation error:\n${fieldErrors.join("\n")}`;
+            }
+          }
+        }
+        
+        console.error("Patch error:", payload);
         setError(errorMessage);
       } else {
         setDetails((prev) =>
@@ -416,7 +435,11 @@ export function TaskDrawer({
         </div>
 
         {loading ? <p className="text-sm text-flc-text-muted">Loading...</p> : null}
-        {error ? <p className="mb-4 text-sm text-flc-danger">{error}</p> : null}
+        {error ? (
+          <div className="mb-4 rounded-lg border border-red-300 bg-red-50 p-3">
+            <p className="whitespace-pre-wrap text-sm text-red-800 font-medium">{error}</p>
+          </div>
+        ) : null}
 
         {!loading && details ? (
           <div className="space-y-6">
