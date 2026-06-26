@@ -12,7 +12,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(function Inp
       ref={ref}
       // Phase 8: Beautify - smooth transitions, better focus states, improved border
       className={cn(
-        "h-10 w-full rounded-lg border border-flc-border bg-white px-3 text-sm text-flc-text placeholder:text-flc-text-muted transition-all duration-300 hover:border-flc-primary/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-flc-primary/20 focus-visible:border-flc-primary",
+        "h-10 w-full  border border-[#d5dce5] bg-white px-3 text-sm text-flc-text placeholder:text-[#8a92a0] transition-all duration-300 hover:border-[#1a2942]/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-flc-primary/20 focus-visible:border-[#1a2942]",
         className
       )}
       {...props}

@@ -22,7 +22,7 @@ export function LabelEditor({ value, onChange, disabled = false }: LabelEditorPr
 
   return (
     <div className="space-y-2">
-      <label className="text-sm font-medium text-flc-text">Labels</label>
+      <label className="text-sm font-medium text-[#1a1a1a]">Labels</label>
       <div className="space-y-3">
         {/* Label selector buttons */}
         <div className="flex flex-wrap gap-2">
@@ -34,7 +34,7 @@ export function LabelEditor({ value, onChange, disabled = false }: LabelEditorPr
               className={`rounded-full px-3 py-1.5 text-sm font-medium border transition-all duration-200 capitalize ${
                 value.includes(label)
                   ? `${LABEL_COLORS[label]} border-current ring-2 ring-offset-1`
-                  : `bg-white border-flc-border text-flc-text hover:border-flc-primary/50`
+                  : `bg-white border-[#d5dce5] text-flc-text hover:border-[#1a2942]/50`
               } disabled:opacity-50 disabled:cursor-not-allowed`}
             >
               {label}
@@ -44,7 +44,7 @@ export function LabelEditor({ value, onChange, disabled = false }: LabelEditorPr
 
         {/* Selected labels display */}
         {value.length > 0 && (
-          <div className="flex flex-wrap gap-2 pt-2 border-t border-flc-border">
+          <div className="flex flex-wrap gap-2 pt-2 border-t border-[#d5dce5]">
             {value.map((label) => (
               <Badge key={label} className={`${LABEL_COLORS[label]} gap-1.5 capitalize`}>
                 <span>{label}</span>
@@ -62,7 +62,7 @@ export function LabelEditor({ value, onChange, disabled = false }: LabelEditorPr
         )}
 
         {value.length === 0 && (
-          <p className="text-xs text-flc-text-muted italic">No labels selected</p>
+          <p className="text-xs text-[#8a92a0] italic">No labels selected</p>
         )}
       </div>
     </div>

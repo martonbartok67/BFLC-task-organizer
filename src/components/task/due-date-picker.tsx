@@ -46,17 +46,17 @@ export function DueDatePicker({ value, onChange, disabled = false }: DueDatePick
 
   return (
     <div className="space-y-2">
-      <label className="text-sm font-medium text-flc-text">Due Date</label>
+      <label className="text-sm font-medium text-[#1a1a1a]">Due Date</label>
       <div className="flex items-center gap-2">
         <div className="relative flex-1">
-          <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 text-flc-text-muted" size={16} />
+          <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 text-[#8a92a0]" size={16} />
           <input
             type="date"
             value={toDateInputValue(value)}
             onChange={(e) => onChange(fromDateInputValue(e.target.value))}
             disabled={disabled}
-            className={`w-full rounded-lg border border-flc-border bg-white pl-10 pr-3 py-2 text-sm placeholder-flc-text-muted transition-all focus:border-flc-primary focus:outline-none focus:ring-2 focus:ring-flc-primary/10 disabled:opacity-50 ${
-              isOverdue ? "border-red-300 bg-red-50" : ""
+            className={`w-full  border border-[#d5dce5] bg-white pl-10 pr-3 py-2 text-sm placeholder-flc-text-muted transition-all focus:border-[#1a2942] focus:outline-none focus:ring-2 focus:ring-[#1a2942] disabled:opacity-50 ${
+              isOverdue ? "border-[#8b5a5a] bg-[#f5f0f0]" : ""
             }`}
           />
         </div>
@@ -66,14 +66,14 @@ export function DueDatePicker({ value, onChange, disabled = false }: DueDatePick
             variant="ghost"
             size="sm"
             onClick={() => onChange(null)}
-            className="text-flc-text-muted hover:text-flc-text"
+            className="text-[#8a92a0] hover:text-[#1a1a1a]"
           >
             <X size={16} />
           </Button>
         )}
       </div>
       {value && (
-        <p className={`text-xs ${isOverdue ? "text-red-600 font-semibold" : "text-flc-text-muted"}`}>
+        <p className={`text-xs ${isOverdue ? "text-[#8b5a5a] font-semibold" : "text-[#8a92a0]"}`}>
           {formatDueDate(value)}
         </p>
       )}

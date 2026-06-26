@@ -25,7 +25,7 @@ export function SectionHeader({
             style={{ width: "40%" }}
           />
         </div>
-        {subtitle ? <p className="mt-3 text-base text-flc-text-muted font-medium">{subtitle}</p> : null}
+        {subtitle ? <p className="mt-3 text-base text-[#8a92a0] font-medium">{subtitle}</p> : null}
       </div>
       {actions ? <div className="flex items-center gap-3">{actions}</div> : null}
     </div>

@@ -190,7 +190,7 @@ export function DashboardView({ initialProjectId }: { initialProjectId?: string 
 
       <div className="mb-4 grid gap-4 sm:grid-cols-2">
         <Card>
-          <h3 className="mb-3 text-sm font-semibold text-flc-text">Create Project</h3>
+          <h3 className="mb-3 text-sm font-semibold text-[#1a1a1a]">Create Project</h3>
           <div className="grid gap-2 sm:grid-cols-2">
             <Input
               placeholder="Project name"
@@ -209,9 +209,9 @@ export function DashboardView({ initialProjectId }: { initialProjectId?: string 
         </Card>
 
         <Card>
-          <h3 className="mb-2 text-sm font-semibold text-flc-text">Project Switcher</h3>
+          <h3 className="mb-2 text-sm font-semibold text-[#1a1a1a]">Project Switcher</h3>
           <select
-            className="h-10 w-full rounded-lg border border-flc-border px-3 text-sm"
+            className="h-10 w-full  border border-[#d5dce5] px-3 text-sm"
             value={selectedProjectId ?? ""}
             onChange={(event) => setSelectedProjectId(event.target.value || null)}
           >
@@ -222,7 +222,7 @@ export function DashboardView({ initialProjectId }: { initialProjectId?: string 
               </option>
             ))}
           </select>
-          <p className="mt-2 text-xs text-flc-text-muted">
+          <p className="mt-2 text-xs text-[#8a92a0]">
             One workspace, multiple initiatives, unified execution.
           </p>
         </Card>
@@ -233,13 +233,13 @@ export function DashboardView({ initialProjectId }: { initialProjectId?: string 
       <div className="grid gap-4 lg:grid-cols-[1fr_320px]">
         <section>
           {/* Phase 2A: View mode tabs */}
-          <div className="mb-4 flex gap-2 border-b border-flc-border">
+          <div className="mb-4 flex gap-2 border-b border-[#d5dce5]">
             <button
               onClick={() => setViewMode("board")}
               className={`px-4 py-2 text-sm font-medium transition-colors ${
                 viewMode === "board"
-                  ? "text-flc-primary border-b-2 border-flc-primary"
-                  : "text-flc-text-muted hover:text-flc-text"
+                  ? "text-flc-primary border-b-2 border-[#1a2942]"
+                  : "text-[#8a92a0] hover:text-[#1a1a1a]"
               }`}
             >
               Board
@@ -248,8 +248,8 @@ export function DashboardView({ initialProjectId }: { initialProjectId?: string 
               onClick={() => setViewMode("members")}
               className={`px-4 py-2 text-sm font-medium transition-colors ${
                 viewMode === "members"
-                  ? "text-flc-primary border-b-2 border-flc-primary"
-                  : "text-flc-text-muted hover:text-flc-text"
+                  ? "text-flc-primary border-b-2 border-[#1a2942]"
+                  : "text-[#8a92a0] hover:text-[#1a1a1a]"
               }`}
             >
               Members
@@ -258,7 +258,7 @@ export function DashboardView({ initialProjectId }: { initialProjectId?: string 
 
           {!boardReady ? (
             <Card>
-              <p className="text-sm text-flc-text-muted">
+              <p className="text-sm text-[#8a92a0]">
                 {loadingBoard ? "Loading..." : "Create or select a project to start."}
               </p>
             </Card>

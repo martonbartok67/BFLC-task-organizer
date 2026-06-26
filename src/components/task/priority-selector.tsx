@@ -16,17 +16,17 @@ const priorityOptions: TaskPriority[] = ["low", "medium", "high", "critical"];
 export function PrioritySelector({ value, onChange, disabled = false }: PrioritySelectorProps) {
   return (
     <div className="space-y-2">
-      <label className="text-sm font-medium text-flc-text">Priority</label>
+      <label className="text-sm font-medium text-[#1a1a1a]">Priority</label>
       <div className="flex flex-wrap gap-2">
         {priorityOptions.map((priority) => (
           <button
             key={priority}
             onClick={() => onChange(priority)}
             disabled={disabled}
-            className={`rounded-lg border-2 px-3 py-1.5 text-sm font-medium transition-all duration-200 ${
+            className={` border-2 px-3 py-1.5 text-sm font-medium transition-all duration-200 ${
               value === priority
-                ? "border-flc-primary bg-flc-primary/10 text-flc-primary"
-                : "border-flc-border bg-white text-flc-text hover:border-flc-primary/50"
+                ? "border-[#1a2942] bg-flc-primary/10 text-flc-primary"
+                : "border-[#d5dce5] bg-white text-flc-text hover:border-[#1a2942]/50"
             } disabled:opacity-50 disabled:cursor-not-allowed`}
           >
             <span className="flex items-center gap-1.5">

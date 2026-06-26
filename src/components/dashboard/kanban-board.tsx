@@ -88,7 +88,7 @@ export function KanbanBoard({
           <section
             key={column.id}
             // Phase 9: Bold animations - slide-in with stagger, glow on hover
-            className="flex h-[50vh] w-full md:h-[70vh] md:min-w-[300px] md:max-w-[320px] flex-col rounded-xl border border-flc-border bg-gradient-to-br from-flc-panel-muted to-slate-100/50 p-3 shadow-subtle hover:shadow-panel transition-all duration-300 animate-slideInLeft"
+            className="flex h-[50vh] w-full md:h-[70vh] md:min-w-[300px] md:max-w-[320px] flex-col rounded-none border border-[#d5dce5] bg-gradient-to-br from-flc-panel-muted to-slate-100/50 p-3  hover: transition-all duration-300 animate-slideInLeft"
             style={{
               animationDelay: `${columns.indexOf(column) * 100}ms`
             }}
@@ -96,10 +96,10 @@ export function KanbanBoard({
             onDrop={() => handleDrop(column, columnTasks.length)}
           >
             {/* Column Header with Gradient */}
-            <div className="mb-3 flex items-center justify-between rounded-lg bg-gradient-to-r from-flc-primary/5 to-flc-primary/0 px-2 py-2">
+            <div className="mb-3 flex items-center justify-between  bg-gradient-to-r from-flc-primary/5 to-flc-primary/0 px-2 py-2">
               <div>
-                <h3 className="text-sm font-semibold text-flc-text">{column.name}</h3>
-                <p className="text-xs text-flc-text-muted">{columnTasks.length} tasks</p>
+                <h3 className="text-sm font-semibold text-[#1a1a1a]">{column.name}</h3>
+                <p className="text-xs text-[#8a92a0]">{columnTasks.length} tasks</p>
               </div>
               <Button
                 size="sm"
@@ -116,7 +116,7 @@ export function KanbanBoard({
             </div>
 
             {isCreating ? (
-              <div className="mb-3 space-y-2 rounded-lg border border-flc-border bg-gradient-to-br from-white to-slate-50 p-3 shadow-subtle">
+              <div className="mb-3 space-y-2  border border-[#d5dce5] bg-gradient-to-br from-white to-slate-50 p-3 ">
                 <Input
                   value={newTitle}
                   onChange={(event) =>
@@ -164,7 +164,7 @@ export function KanbanBoard({
               ))}
               {columnTasks.length === 0 ? (
                 // Phase 8: Better empty state visual
-                <div className="rounded-lg border-2 border-dashed border-flc-border/50 bg-gradient-to-br from-flc-panel-muted/50 to-slate-50/30 p-4 text-center text-xs text-flc-text-muted transition-all duration-300 hover:border-flc-border hover:bg-flc-panel-muted/50">
+                <div className=" border-2 border-dashed border-[#d5dce5]/50 bg-gradient-to-br from-flc-panel-muted/50 to-slate-50/30 p-4 text-center text-xs text-[#8a92a0] transition-all duration-300 hover:border-[#d5dce5] hover:bg-white-muted/50">
                   <p className="font-medium">No tasks yet</p>
                   <p className="text-xs mt-1">Drop or create tasks here</p>
                 </div>

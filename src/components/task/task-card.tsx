@@ -21,37 +21,35 @@ export function TaskCard({
       draggable={draggable}
       onDragStart={() => onDragStart?.(task.id)}
       onClick={onClick}
-      // Phase 9: Bold animations - fade-in + slide-up on load, scale on hover, glow when dragging
-      className="group w-full rounded-xl border border-flc-border bg-gradient-to-br from-white to-slate-50 p-3 text-left shadow-subtle transition-all duration-300 hover:-translate-y-1 hover:border-flc-primary hover:shadow-lg hover:shadow-flc-primary/10 hover:scale-[1.02] animate-fadeInUp"
+      className="group w-full border border-[#d5dce5] bg-white p-3 text-left transition-all duration-150 hover:border-[#1a2942] hover:bg-[#f8f9fb] hover:shadow-sm"
     >
       <div className="mb-2 flex items-center justify-between gap-2">
-        <p className="line-clamp-2 text-sm font-semibold text-flc-text">{task.title}</p>
+        <p className="line-clamp-2 text-sm font-semibold text-[#1a1a1a]">{task.title}</p>
         {task.isMilestone ? (
           <Milestone size={14} className="shrink-0 text-flc-primary" />
         ) : null}
       </div>
 
       {task.description ? (
-        <p className="mb-3 line-clamp-2 text-xs text-flc-text-muted">{task.description}</p>
+        <p className="mb-3 line-clamp-2 text-xs text-[#8a92a0]">{task.description}</p>
       ) : null}
 
       <div className="flex flex-wrap items-center gap-2">
         {task.isUnassigned ? (
-          <Badge className="gap-1 bg-gradient-to-r from-blue-50 to-cyan-50 text-blue-700 border border-blue-200">
+          <Badge className="gap-1 bg-[#f0f2f5] text-[#4a5568] border border-[#d5dce5] rounded-none">
             <span>Unassigned</span>
           </Badge>
         ) : task.assigneeName ? (
-          // Phase 6: Show assignee name when assigned
-          <Badge className="gap-1 bg-gradient-to-r from-purple-50 to-pink-50 text-purple-700 border border-purple-200">
+          <Badge className="gap-1 bg-[#f0f2f5] text-[#4a5568] border border-[#d5dce5] rounded-none">
             <User size={12} />
             <span className="truncate">{task.assigneeName}</span>
           </Badge>
         ) : null}
-        <Badge tone={PRIORITY_TONE[task.priority]} className="gap-1 transition-all duration-200">
+        <Badge tone={PRIORITY_TONE[task.priority]} className="gap-1 transition-all duration-150 rounded-none">
           <Flag size={12} />
           <span>{PRIORITY_LABELS[task.priority]}</span>
         </Badge>
-        <Badge className="gap-1 bg-gradient-to-r from-amber-50 to-orange-50 text-amber-700 border border-amber-200 transition-all duration-200">
+        <Badge className="gap-1 bg-[#f0f2f5] text-[#4a5568] border border-[#d5dce5] transition-all duration-150 rounded-none">
           <CalendarClock size={12} />
           <span>{formatDate(task.dueDate)}</span>
         </Badge>

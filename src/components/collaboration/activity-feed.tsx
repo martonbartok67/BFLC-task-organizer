@@ -36,26 +36,26 @@ export function ActivityFeed({ projectId }: { projectId?: string }) {
 
   return (
     <Card className="h-full p-0">
-      <div className="border-b border-flc-border px-4 py-3">
-        <h3 className="text-sm font-semibold text-flc-text">Activity Feed</h3>
-        <p className="text-xs text-flc-text-muted">Recent collaboration and workflow updates.</p>
+      <div className="border-b border-[#d5dce5] px-4 py-3">
+        <h3 className="text-sm font-semibold text-[#1a1a1a]">Activity Feed</h3>
+        <p className="text-xs text-[#8a92a0]">Recent collaboration and workflow updates.</p>
       </div>
       <div className="flc-scroll max-h-[70vh] space-y-3 overflow-y-auto p-4">
-        {loading ? <p className="text-xs text-flc-text-muted">Loading activity...</p> : null}
+        {loading ? <p className="text-xs text-[#8a92a0]">Loading activity...</p> : null}
         {error ? <p className="text-xs text-flc-danger">{error}</p> : null}
         {events.map((event) => (
-          <article key={event.id} className="rounded-lg border border-flc-border bg-white p-3">
+          <article key={event.id} className=" border border-[#d5dce5] bg-white p-3">
             <div className="mb-2 flex items-center justify-between gap-2">
               <Badge>{event.activityType.replaceAll("_", " ")}</Badge>
-              <span className="text-[11px] text-flc-text-muted">
+              <span className="text-[11px] text-[#8a92a0]">
                 {new Date(event.createdAt).toLocaleString("en-US")}
               </span>
             </div>
-            <p className="text-sm text-flc-text">{event.message}</p>
+            <p className="text-sm text-[#1a1a1a]">{event.message}</p>
           </article>
         ))}
         {!loading && !events.length ? (
-          <p className="text-xs text-flc-text-muted">No activity yet.</p>
+          <p className="text-xs text-[#8a92a0]">No activity yet.</p>
         ) : null}
       </div>
     </Card>

@@ -45,10 +45,10 @@ export function EventCard({
 
   if (isCompact) {
     return (
-      <div className="rounded-md border border-flc-border bg-gradient-to-br from-blue-50 to-blue-100 px-2 py-1 hover:shadow-md transition-shadow">
-        <p className="line-clamp-1 text-[11px] font-medium text-flc-text">{event.title}</p>
+      <div className=" border border-[#d5dce5] bg-gradient-to-br from-blue-50 to-blue-100 px-2 py-1 hover:shadow-md transition-shadow">
+        <p className="line-clamp-1 text-[11px] font-medium text-[#1a1a1a]">{event.title}</p>
         {event.members.length > 0 && (
-          <p className="text-[10px] text-flc-text-muted">
+          <p className="text-[10px] text-[#8a92a0]">
             {event.members.length} member{event.members.length > 1 ? "s" : ""}
           </p>
         )}
@@ -58,18 +58,18 @@ export function EventCard({
 
   return (
     <div
-      className="relative rounded-lg border border-flc-border bg-white p-4 shadow-sm hover:shadow-md transition-shadow"
+      className="relative  border border-[#d5dce5] bg-white p-4 shadow-sm hover:shadow-md transition-shadow"
       onMouseEnter={() => setShowActions(true)}
       onMouseLeave={() => setShowActions(false)}
     >
       <div className="mb-2">
-        <h4 className="font-semibold text-flc-text">{event.title}</h4>
+        <h4 className="font-semibold text-[#1a1a1a]">{event.title}</h4>
         {event.description && (
-          <p className="text-xs text-flc-text-muted mt-1">{event.description}</p>
+          <p className="text-xs text-[#8a92a0] mt-1">{event.description}</p>
         )}
       </div>
 
-      <div className="mb-3 text-xs text-flc-text-muted space-y-1">
+      <div className="mb-3 text-xs text-[#8a92a0] space-y-1">
         <p>
           📅{" "}
           {new Date(event.startTime).toLocaleDateString("en-US", {
@@ -93,13 +93,13 @@ export function EventCard({
             {event.members.slice(0, 3).map((member) => (
               <span
                 key={member.id}
-                className="inline-block rounded-full bg-flc-panel-muted px-2 py-1 text-[10px] text-flc-text"
+                className="inline-block rounded-full bg-white-muted px-2 py-1 text-[10px] text-[#1a1a1a]"
               >
                 {member.fullName}
               </span>
             ))}
             {event.members.length > 3 && (
-              <span className="inline-block rounded-full bg-flc-panel-muted px-2 py-1 text-[10px] text-flc-text-muted">
+              <span className="inline-block rounded-full bg-white-muted px-2 py-1 text-[10px] text-[#8a92a0]">
                 +{event.members.length - 3}
               </span>
             )}
@@ -108,7 +108,7 @@ export function EventCard({
       )}
 
       {showActions && (
-        <div className="flex gap-2 pt-3 border-t border-flc-border">
+        <div className="flex gap-2 pt-3 border-t border-[#d5dce5]">
           <Button
             size="sm"
             variant="secondary"

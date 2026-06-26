@@ -179,15 +179,15 @@ export function MembersManagement({
       {showAddDropdown && (
         <Card className="bg-slate-50 border-slate-200 p-4">
           <div className="space-y-3">
-            <p className="text-sm font-semibold text-flc-text">Select user to add:</p>
+            <p className="text-sm font-semibold text-[#1a1a1a]">Select user to add:</p>
 
             {loadingAvailable ? (
               <div className="flex items-center gap-2">
                 <Loader2 size={14} className="animate-spin" />
-                <p className="text-xs text-flc-text-muted">Loading users...</p>
+                <p className="text-xs text-[#8a92a0]">Loading users...</p>
               </div>
             ) : availableUsers.length === 0 ? (
-              <p className="text-xs text-flc-text-muted">All users already added</p>
+              <p className="text-xs text-[#8a92a0]">All users already added</p>
             ) : (
               <div className="space-y-2 max-h-48 overflow-y-auto">
                 {availableUsers.map((user) => (
@@ -195,10 +195,10 @@ export function MembersManagement({
                     key={user.id}
                     onClick={() => addMember(user.id)}
                     disabled={addingUser === user.id}
-                    className="w-full text-left p-3 rounded-lg hover:bg-white border border-slate-200 hover:border-slate-300 transition-all text-sm disabled:opacity-50"
+                    className="w-full text-left p-3  hover:bg-white border border-slate-200 hover:border-slate-300 transition-all text-sm disabled:opacity-50"
                   >
-                    <p className="font-medium text-flc-text">{user.name}</p>
-                    <p className="text-xs text-flc-text-muted">{user.email}</p>
+                    <p className="font-medium text-[#1a1a1a]">{user.name}</p>
+                    <p className="text-xs text-[#8a92a0]">{user.email}</p>
                     {addingUser === user.id && (
                       <div className="flex items-center gap-1 mt-1">
                         <Loader2 size={12} className="animate-spin" />
@@ -218,12 +218,12 @@ export function MembersManagement({
         <Card className="p-12 flex items-center justify-center">
           <div className="text-center space-y-2">
             <Loader2 size={24} className="mx-auto animate-spin text-flc-primary" />
-            <p className="text-sm text-flc-text-muted">Loading members...</p>
+            <p className="text-sm text-[#8a92a0]">Loading members...</p>
           </div>
         </Card>
       ) : members.length === 0 ? (
         <Card className="p-8 text-center">
-          <p className="text-sm text-flc-text-muted">No members added yet</p>
+          <p className="text-sm text-[#8a92a0]">No members added yet</p>
         </Card>
       ) : (
         <Card className="overflow-hidden">
@@ -231,17 +231,17 @@ export function MembersManagement({
             {members.map((member) => (
               <div
                 key={member.userId}
-                className="flex items-center gap-4 p-5 hover:bg-flc-panel-muted transition-colors"
+                className="flex items-center gap-4 p-5 hover:bg-white-muted transition-colors"
               >
                 <User
                   size={28}
-                  className="text-slate-400 bg-slate-100 p-1.5 rounded-lg flex-shrink-0"
+                  className="text-slate-400 bg-slate-100 p-1.5  flex-shrink-0"
                 />
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-semibold text-flc-text truncate">
                     {member.userName}
                   </p>
-                  <p className="text-xs text-flc-text-muted truncate">
+                  <p className="text-xs text-[#8a92a0] truncate">
                     {member.userEmail}
                   </p>
                 </div>
@@ -249,7 +249,7 @@ export function MembersManagement({
             ))}
           </div>
 
-          <div className="bg-flc-panel-muted p-4 border-t border-flc-border text-xs text-flc-text-muted">
+          <div className="bg-white-muted p-4 border-t border-[#d5dce5] text-xs text-[#8a92a0]">
             {members.length} member{members.length !== 1 ? "s" : ""} in project
           </div>
         </Card>

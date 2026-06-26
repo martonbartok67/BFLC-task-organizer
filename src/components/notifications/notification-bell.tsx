@@ -114,10 +114,10 @@ export function NotificationBell() {
       {/* Notification Bell Button */}
       <button
         onClick={() => setOpen(!open)}
-        className="relative p-2 rounded-lg hover:bg-flc-panel-muted transition-colors duration-200"
+        className="relative p-2  hover:bg-white-muted transition-colors duration-200"
         aria-label="Notifications"
       >
-        <Bell size={20} className="text-flc-text" />
+        <Bell size={20} className="text-[#1a1a1a]" />
         {unreadCount > 0 && (
           <span className="absolute top-0 right-0 inline-flex items-center justify-center h-5 w-5 rounded-full text-xs font-bold bg-red-500 text-white">
             {unreadCount > 9 ? "9+" : unreadCount}
@@ -127,10 +127,10 @@ export function NotificationBell() {
 
       {/* Notification Dropdown */}
       {open && (
-        <div className="absolute right-0 mt-2 w-80 bg-white rounded-lg border border-flc-border shadow-lg z-50">
+        <div className="absolute right-0 mt-2 w-80 bg-white  border border-[#d5dce5]  z-50">
           {/* Header */}
-          <div className="flex items-center justify-between p-4 border-b border-flc-border">
-            <h3 className="font-semibold text-flc-text">Notifications</h3>
+          <div className="flex items-center justify-between p-4 border-b border-[#d5dce5]">
+            <h3 className="font-semibold text-[#1a1a1a]">Notifications</h3>
             <Button
               variant="ghost"
               size="sm"
@@ -144,11 +144,11 @@ export function NotificationBell() {
           {/* Notifications List */}
           <div className="max-h-96 overflow-y-auto">
             {loading || titlesLoading ? (
-              <div className="p-8 text-center text-flc-text-muted">
+              <div className="p-8 text-center text-[#8a92a0]">
                 <p className="text-sm">Loading...</p>
               </div>
             ) : notifications.length === 0 ? (
-              <div className="p-8 text-center text-flc-text-muted">
+              <div className="p-8 text-center text-[#8a92a0]">
                 <p className="text-sm">No notifications yet</p>
               </div>
             ) : (
@@ -163,7 +163,7 @@ export function NotificationBell() {
                       key={notification.id}
                       className={`p-4 transition-colors duration-200 ${
                         isRead ? "bg-white" : "bg-blue-50"
-                      } hover:bg-flc-panel-muted`}
+                      } hover:bg-white-muted`}
                     >
                       <div className="flex items-start gap-3">
                         {/* Icon */}
@@ -180,7 +180,7 @@ export function NotificationBell() {
                           <p className="text-sm text-flc-text mt-0.5 line-clamp-2">
                             {message}
                           </p>
-                          <p className="text-xs text-flc-text-muted mt-1">
+                          <p className="text-xs text-[#8a92a0] mt-1">
                             {getRelativeTime(notification.createdAt)}
                           </p>
                         </div>

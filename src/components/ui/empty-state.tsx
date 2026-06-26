@@ -22,7 +22,7 @@ export function EmptyState({
   return (
     <div
       className={cn(
-        "flex flex-col items-center justify-center rounded-lg border-2 border-dashed border-flc-border/50 bg-gradient-to-br from-flc-panel-muted/30 to-slate-50/50 p-6 text-center transition-all duration-300 hover:border-flc-border hover:bg-flc-panel-muted/50",
+        "flex flex-col items-center justify-center  border-2 border-dashed border-[#d5dce5]/50 bg-gradient-to-br from-flc-panel-muted/30 to-slate-50/50 p-6 text-center transition-all duration-300 hover:border-[#d5dce5] hover:bg-white-muted/50",
         variant === "compact" && "p-4",
         className
       )}
@@ -31,12 +31,12 @@ export function EmptyState({
       {Icon ? (
         <Icon
           size={variant === "compact" ? 32 : 48}
-          className="mb-3 text-flc-text-muted opacity-50 transition-transform duration-300 group-hover:scale-110"
+          className="mb-3 text-[#8a92a0] opacity-50 transition-transform duration-300 group-hover:scale-110"
         />
       ) : null}
-      <h3 className="text-sm font-semibold text-flc-text">{title}</h3>
+      <h3 className="text-sm font-semibold text-[#1a1a1a]">{title}</h3>
       {description ? (
-        <p className="mt-1 text-xs text-flc-text-muted max-w-xs">{description}</p>
+        <p className="mt-1 text-xs text-[#8a92a0] max-w-xs">{description}</p>
       ) : null}
       {action ? <div className="mt-4">{action}</div> : null}
     </div>

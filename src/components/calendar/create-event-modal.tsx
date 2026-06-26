@@ -95,14 +95,14 @@ export function CreateEventModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-      <div className="w-full max-w-md rounded-lg bg-white p-6 shadow-xl">
+      <div className="w-full max-w-md  bg-white p-6 shadow-xl">
         <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-flc-text">Create Event</h2>
+          <h2 className="text-lg font-semibold text-[#1a1a1a]">Create Event</h2>
           <button
             onClick={onClose}
-            className="rounded hover:bg-flc-panel-muted p-1"
+            className="rounded hover:bg-white-muted p-1"
           >
-            <X size={20} className="text-flc-text-muted" />
+            <X size={20} className="text-[#8a92a0]" />
           </button>
         </div>
 
@@ -116,7 +116,7 @@ export function CreateEventModal({
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder="e.g., Design Review"
-              className="w-full rounded border border-flc-border bg-white px-3 py-2 text-sm text-flc-text placeholder-flc-text-muted focus:border-flc-accent focus:outline-none"
+              className="w-full rounded border border-[#d5dce5] bg-white px-3 py-2 text-sm text-flc-text placeholder-flc-text-muted focus:border-flc-accent focus:outline-none"
             />
           </div>
 
@@ -129,7 +129,7 @@ export function CreateEventModal({
               onChange={(e) => setDescription(e.target.value)}
               placeholder="Optional details..."
               rows={3}
-              className="w-full rounded border border-flc-border bg-white px-3 py-2 text-sm text-flc-text placeholder-flc-text-muted focus:border-flc-accent focus:outline-none"
+              className="w-full rounded border border-[#d5dce5] bg-white px-3 py-2 text-sm text-flc-text placeholder-flc-text-muted focus:border-flc-accent focus:outline-none"
             />
           </div>
 
@@ -141,7 +141,7 @@ export function CreateEventModal({
               type="datetime-local"
               value={startTime}
               onChange={(e) => setStartTime(e.target.value)}
-              className="w-full rounded border border-flc-border bg-white px-3 py-2 text-sm text-flc-text focus:border-flc-accent focus:outline-none"
+              className="w-full rounded border border-[#d5dce5] bg-white px-3 py-2 text-sm text-flc-text focus:border-flc-accent focus:outline-none"
             />
           </div>
 
@@ -153,7 +153,7 @@ export function CreateEventModal({
               type="datetime-local"
               value={endTime}
               onChange={(e) => setEndTime(e.target.value)}
-              className="w-full rounded border border-flc-border bg-white px-3 py-2 text-sm text-flc-text focus:border-flc-accent focus:outline-none"
+              className="w-full rounded border border-[#d5dce5] bg-white px-3 py-2 text-sm text-flc-text focus:border-flc-accent focus:outline-none"
             />
           </div>
 
@@ -161,9 +161,9 @@ export function CreateEventModal({
             <label className="block text-sm font-medium text-flc-text mb-2">
               Invite Members
             </label>
-            <div className="space-y-2 max-h-40 overflow-y-auto border border-flc-border rounded p-2 bg-flc-panel-muted">
+            <div className="space-y-2 max-h-40 overflow-y-auto border border-[#d5dce5] rounded p-2 bg-white-muted">
               {teamMembers.length === 0 ? (
-                <p className="text-xs text-flc-text-muted">No team members available</p>
+                <p className="text-xs text-[#8a92a0]">No team members available</p>
               ) : (
                 teamMembers.map((member) => (
                   <label key={member.id} className="flex items-center cursor-pointer">
@@ -171,9 +171,9 @@ export function CreateEventModal({
                       type="checkbox"
                       checked={selectedMembers.includes(member.id)}
                       onChange={() => toggleMember(member.id)}
-                      className="h-4 w-4 rounded border-flc-border text-flc-accent"
+                      className="h-4 w-4 rounded border-[#d5dce5] text-flc-accent"
                     />
-                    <span className="ml-2 text-sm text-flc-text">{member.fullName}</span>
+                    <span className="ml-2 text-sm text-[#1a1a1a]">{member.fullName}</span>
                   </label>
                 ))
               )}

@@ -426,24 +426,24 @@ export function TaskDrawer({
 
   return (
     <div className="fixed inset-0 z-50 flex justify-end bg-slate-950/35">
-      <div className="flc-scroll h-full w-full max-w-[520px] overflow-y-auto border-l border-flc-border bg-white p-5 shadow-panel">
+      <div className="flc-scroll h-full w-full max-w-[520px] overflow-y-auto border-l border-[#d5dce5] bg-white p-5">
         <div className="mb-4 flex items-center justify-between">
-          <h3 className="text-lg font-semibold text-flc-text">Task Details</h3>
+          <h3 className="text-lg font-semibold text-[#1a1a1a]">Task Details</h3>
           <Button variant="ghost" size="sm" onClick={onClose}>
             <X size={16} />
           </Button>
         </div>
 
-        {loading ? <p className="text-sm text-flc-text-muted">Loading...</p> : null}
+        {loading ? <p className="text-sm text-[#8a92a0]">Loading...</p> : null}
         {error ? (
-          <div className="mb-4 rounded-lg border border-red-300 bg-red-50 p-3">
-            <p className="whitespace-pre-wrap text-sm text-red-800 font-medium">{error}</p>
+          <div className="mb-4 border border-[#8b5a5a] bg-[#f5f0f0] p-3">
+            <p className="whitespace-pre-wrap text-sm text-[#8b5a5a] font-medium">{error}</p>
           </div>
         ) : null}
 
         {!loading && details ? (
           <div className="space-y-6">
-            <section className="space-y-3 rounded-xl border border-flc-border bg-flc-panel-muted p-4">
+            <section className="space-y-3 border border-[#d5dce5] bg-[#f8f9fb] p-4">
               <Input
                 value={details.task.title}
                 onChange={(event) =>
@@ -475,7 +475,7 @@ export function TaskDrawer({
               />
 
               <div className="grid gap-3 sm:grid-cols-2">
-                <label className="text-xs font-medium text-flc-text-muted">
+                <label className="text-xs font-medium text-[#8a92a0]">
                   Status
                   <select
                     value={details.task.status}
@@ -489,7 +489,7 @@ export function TaskDrawer({
                           : prev
                       )
                     }
-                    className="mt-1 h-10 w-full rounded-lg border border-flc-border px-3 text-sm"
+                    className="mt-1 h-10 w-full border border-[#d5dce5] px-3 text-sm"
                   >
                     {statusOptions.map((option) => (
                       <option key={option.value} value={option.value}>
@@ -499,7 +499,7 @@ export function TaskDrawer({
                   </select>
                 </label>
 
-                <label className="text-xs font-medium text-flc-text-muted">
+                <label className="text-xs font-medium text-[#8a92a0]">
                   Priority
                   <PrioritySelector
                     value={details.task.priority}
@@ -519,7 +519,7 @@ export function TaskDrawer({
 
               {/* Phase 2A: Assignee field */}
               <div className="grid gap-3">
-                <label className="text-xs font-medium text-flc-text-muted">
+                <label className="text-xs font-medium text-[#8a92a0]">
                   Assigned To
                   {projectMembers.length > 0 ? (
                     <div className="mt-1 flex flex-col gap-2">
@@ -533,7 +533,7 @@ export function TaskDrawer({
                               assignTask(newAssigneeId);
                             }
                           }}
-                          className="h-10 w-full rounded-lg border border-flc-border px-3 text-sm disabled:bg-flc-panel-muted disabled:cursor-not-allowed"
+                          className="h-10 w-full border border-[#d5dce5] px-3 text-sm disabled:bg-white-muted disabled:cursor-not-allowed"
                         >
                           {projectMembers.map((member) => (
                             <option key={member.userId} value={member.userId}>
@@ -563,7 +563,7 @@ export function TaskDrawer({
                                   assignTask(newAssigneeId);
                                 }
                               }}
-                              className="h-10 w-full rounded-lg border border-flc-border px-3 text-sm"
+                              className="h-10 w-full border border-[#d5dce5] px-3 text-sm"
                             >
                               <option value="">-- Select member --</option>
                               {projectMembers.map((member) => (
@@ -577,13 +577,13 @@ export function TaskDrawer({
                       )}
                     </div>
                   ) : (
-                    <p className="mt-1 text-xs text-flc-text-muted">Loading project members...</p>
+                    <p className="mt-1 text-xs text-[#8a92a0]">Loading project members...</p>
                   )}
                 </label>
               </div>
 
               <div className="grid gap-3 sm:grid-cols-2">
-                <label className="text-xs font-medium text-flc-text-muted">
+                <label className="text-xs font-medium text-[#8a92a0]">
                   Start
                   <Input
                     type="date"
@@ -618,7 +618,7 @@ export function TaskDrawer({
                 />
               </div>
 
-              <label className="flex items-center gap-2 text-xs text-flc-text-muted">
+              <label className="flex items-center gap-2 text-xs text-[#8a92a0]">
                 <input
                   type="checkbox"
                   checked={details.task.isMilestone}
@@ -674,10 +674,10 @@ export function TaskDrawer({
 
             <section className="space-y-3">
               <div className="flex items-center justify-between">
-                <h4 className="text-sm font-semibold text-flc-text">Subtasks</h4>
+                <h4 className="text-sm font-semibold text-[#1a1a1a]">Subtasks</h4>
                 <Badge>{progress.done + "/" + progress.total}</Badge>
               </div>
-              <div className="h-2 w-full overflow-hidden rounded-full bg-flc-panel-muted">
+              <div className="h-2 w-full overflow-hidden rounded-full bg-[#f0f2f5]">
                 <div
                   className="h-full bg-flc-primary transition-all"
                   style={{ width: `${progress.pct}%` }}
@@ -687,14 +687,14 @@ export function TaskDrawer({
                 {details.subtasks.map((subtask) => (
                   <label
                     key={subtask.id}
-                    className="flex items-center gap-2 rounded-lg border border-flc-border bg-white px-3 py-2 text-sm"
+                    className="flex items-center gap-2 border border-[#d5dce5] bg-white px-3 py-2 text-sm"
                   >
                     <input
                       type="checkbox"
                       checked={subtask.isDone}
                       onChange={(event) => toggleSubtask(subtask.id, event.target.checked)}
                     />
-                    <span className={subtask.isDone ? "text-flc-text-muted line-through" : "text-flc-text"}>
+                    <span className={subtask.isDone ? "text-[#8a92a0] line-through" : "text-[#1a1a1a]"}>
                       {subtask.title}
                     </span>
                   </label>
@@ -713,8 +713,8 @@ export function TaskDrawer({
             </section>
 
             <section className="space-y-3">
-              <h4 className="text-sm font-semibold text-flc-text">Attachments</h4>
-              <div className="rounded-lg border border-flc-border p-3">
+              <h4 className="text-sm font-semibold text-[#1a1a1a]">Attachments</h4>
+              <div className="border border-[#d5dce5] p-3">
                 <Input
                   value={attachmentLabel}
                   onChange={(event) => setAttachmentLabel(event.target.value)}
@@ -730,7 +730,7 @@ export function TaskDrawer({
                     <Link2 size={14} />
                   </Button>
                 </div>
-                <label className="mt-2 flex cursor-pointer items-center gap-2 rounded-md border border-dashed border-flc-border px-3 py-2 text-xs text-flc-text-muted">
+                <label className="mt-2 flex cursor-pointer items-center gap-2  border border-dashed border-[#d5dce5] px-3 py-2 text-xs text-[#8a92a0]">
                   <Paperclip size={14} />
                   Upload file
                   <input
@@ -742,14 +742,14 @@ export function TaskDrawer({
               </div>
               <ul className="space-y-2 text-sm">
                 {details.attachments.map((attachment) => (
-                  <li key={attachment.id} className="rounded-lg border border-flc-border bg-white px-3 py-2">
-                    <p className="font-medium text-flc-text">{attachment.label}</p>
+                  <li key={attachment.id} className="border border-[#d5dce5] bg-white px-3 py-2">
+                    <p className="font-medium text-[#1a1a1a]">{attachment.label}</p>
                     {attachment.type === "link" && attachment.url ? (
                       <a href={attachment.url} target="_blank" rel="noreferrer" className="text-xs text-blue-700">
                         {attachment.url}
                       </a>
                     ) : (
-                      <p className="text-xs text-flc-text-muted">{attachment.storagePath}</p>
+                      <p className="text-xs text-[#8a92a0]">{attachment.storagePath}</p>
                     )}
                   </li>
                 ))}
@@ -757,17 +757,17 @@ export function TaskDrawer({
             </section>
 
             <section className="space-y-3">
-              <h4 className="text-sm font-semibold text-flc-text">Comments</h4>
+              <h4 className="text-sm font-semibold text-[#1a1a1a]">Comments</h4>
               <div className="space-y-2">
                 {details.comments.map((comment) => (
                   <article
                     key={comment.id}
-                    className="rounded-lg border border-flc-border bg-white px-3 py-2 text-sm"
+                    className="border border-[#d5dce5] bg-white px-3 py-2 text-sm"
                   >
-                    <p className="mb-1 text-xs text-flc-text-muted">
+                    <p className="mb-1 text-xs text-[#8a92a0]">
                       {new Date(comment.createdAt).toLocaleString("en-US")}
                     </p>
-                    <p className="text-flc-text">{comment.body}</p>
+                    <p className="text-[#1a1a1a]">{comment.body}</p>
                     {comment.mentions.length ? (
                       <div className="mt-2 flex flex-wrap gap-1">
                         {comment.mentions.map((mention) => (
@@ -778,7 +778,7 @@ export function TaskDrawer({
                   </article>
                 ))}
               </div>
-              <div className="space-y-2 rounded-lg border border-flc-border p-3">
+              <div className="space-y-2 border border-[#d5dce5] p-3">
                 <Textarea
                   value={commentBody}
                   onChange={(event) => setCommentBody(event.target.value)}
