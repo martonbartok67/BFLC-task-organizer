@@ -97,6 +97,15 @@ export function DashboardView({ initialProjectId }: { initialProjectId?: string 
     [projects]
   );
 
+  const taskCounts = useMemo(() => {
+    const tasks = boardData?.tasks ?? [];
+    return {
+      todo: tasks.filter((t) => t.status === "todo").length,
+      inProgress: tasks.filter((t) => t.status === "in_progress").length,
+      done: tasks.filter((t) => t.status === "done").length
+    };
+  }, [boardData]);
+
   async function createProject() {
     if (!projectName.trim()) {
       return;
@@ -171,10 +180,10 @@ export function DashboardView({ initialProjectId }: { initialProjectId?: string 
 
   return (
     <>
-      {/* Header: title + inline project switcher + primary actions */}
-      <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sn:justify-between">
+      {/* Header: bold title + inline project switcher + primary actions */}
+      <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-xl font-semibold text-flc-text">Workflow Dashboard</h1>
+          <h1 className="text-2xl font-bold text-flc-text tracking-tight">Workflow Dashboard</h1>
           <p className="mt-1 text-sm text-[#8a92a0]">
             Coordinate tasks across projects with drag-and-drop delivery.
           </p>
@@ -202,6 +211,24 @@ export function DashboardView({ initialProjectId }: { initialProjectId?: string 
           </Button>
         </div>
       </div>
+
+      {/* Stat strip: real counts from boardData, no decoration */}
+      {boardReady && (
+        <div className="mb-5 grid grid-cols-3 gap-3">
+          <div className="rounded-lg border border-flc-border bg-white p-4 border-l-[3px] border-l-[#6b7c99]">
+            <p className="text-2xl font-bold text-flc-text">{taskCounts.todo}</p>
+            <p className="text-xs font-medium uppercase tracking-wide text-[#8a92a0]">To Do</p>
+          </div>
+          <div className="rounded-lg border border-flc-border bg-white p-4 border-l-[3px] border-l-flc-accent">
+            <p className="text-2xl font-bold text-flc-text">{taskCounts.inProgress}</p>
+            <p className="text-xs font-medium uppercase tracking-wide text-[#8a92a0]">In Progress</p>
+          </div>
+          <div className="rounded-lg border border-flc-border bg-white p-4 border-l-[3px] border-l-flc-success">
+            <p className="text-2xl font-bold text-flc-text">{taskCounts.done}</p>
+            <p className="text-xs font-medium uppercase tracking-wide text-[#8a92a0]">Done</p>
+          </div>
+        </div>
+      )}
 
       {/* Create project: collapsed by default to keep the board primary */}
       <div className="mb-5">
