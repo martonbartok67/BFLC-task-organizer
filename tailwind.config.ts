@@ -12,6 +12,7 @@ const config: Config = {
         flc: {
           primary: "var(--color-primary)",
           "primary-strong": "var(--color-primary-strong)",
+          accent: "var(--color-accent-warm)",
           surface: "var(--color-surface)",
           panel: "var(--color-panel)",
           "panel-muted": "var(--color-panel-muted)",

@@ -87,16 +87,15 @@ export function KanbanBoard({
         return (
           <section
             key={column.id}
-            // Phase 9: Bold animations - slide-in with stagger, glow on hover
-            className="flex h-[50vh] w-full md:h-[70vh] md:min-w-[300px] md:max-w-[320px] flex-col rounded-none border border-[#d5dce5] bg-gradient-to-br from-flc-panel-muted to-slate-100/50 p-3  hover: transition-all duration-300 animate-slideInLeft"
+            className="flex h-[50vh] w-full md:h-[70vh] md:min-w-[300px] md:max-w-[320px] flex-col rounded-lg border border-[#d5dce5] bg-[#f8f9fb] p-3 transition-colors duration-150 hover:border-[#8b7355]"
             style={{
               animationDelay: `${columns.indexOf(column) * 100}ms`
             }}
             onDragOver={(event) => event.preventDefault()}
             onDrop={() => handleDrop(column, columnTasks.length)}
           >
-            {/* Column Header with Gradient */}
-            <div className="mb-3 flex items-center justify-between  bg-gradient-to-r from-flc-primary/5 to-flc-primary/0 px-2 py-2">
+            {/* Column Header */}
+            <div className="mb-3 flex items-center justify-between border-b border-[#e8ecf1] px-1 pb-2">
               <div>
                 <h3 className="text-sm font-semibold text-[#1a1a1a]">{column.name}</h3>
                 <p className="text-xs text-[#8a92a0]">{columnTasks.length} tasks</p>
@@ -116,7 +115,7 @@ export function KanbanBoard({
             </div>
 
             {isCreating ? (
-              <div className="mb-3 space-y-2  border border-[#d5dce5] bg-gradient-to-br from-white to-slate-50 p-3 ">
+              <div className="mb-3 space-y-2 rounded-md border border-[#d5dce5] bg-white p-3">
                 <Input
                   value={newTitle}
                   onChange={(event) =>

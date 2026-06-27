@@ -9,7 +9,6 @@ import { TaskDrawer } from "@/components/task/task-drawer";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { SectionHeader } from "@/components/ui/section-header";
 import { Textarea } from "@/components/ui/textarea";
 import type { BoardColumn, Project, Task } from "@/types/domain";
 
@@ -41,6 +40,7 @@ export function DashboardView({ initialProjectId }: { initialProjectId?: string 
   const [drawerTaskId, setDrawerTaskId] = useState<string | null>(null);
   // Phase 2A: View mode
   const [viewMode, setViewMode] = useState<"board" | "members">("board");
+  const [showCreateProject, setShowCreateProject] = useState(false);
 
   async function loadProjects() {
     const response = await fetch("/api/projects");
@@ -171,47 +171,17 @@ export function DashboardView({ initialProjectId }: { initialProjectId?: string 
 
   return (
     <>
-      <SectionHeader
-        title="Multi-Project Workflow Dashboard"
-        subtitle="Coordinate complex tasks across projects with a drag-and-drop delivery flow."
-        actions={
-          <>
-            <Button variant="secondary" onClick={reloadEverything}>
-              <RefreshCcw size={14} className="mr-2" />
-              Refresh
-            </Button>
-            <Button onClick={() => (window.location.href = "/calendar")}>
-              Calendar
-              <ArrowRight size={14} className="ml-2" />
-            </Button>
-          </>
-        }
-      />
-
-      <div className="mb-4 grid gap-4 sm:grid-cols-2">
-        <Card>
-          <h3 className="mb-3 text-sm font-semibold text-[#1a1a1a]">Create Project</h3>
-          <div className="grid gap-2 sm:grid-cols-2">
-            <Input
-              placeholder="Project name"
-              value={projectName}
-              onChange={(event) => setProjectName(event.target.value)}
-            />
-            <Button onClick={createProject}>Add Project</Button>
-          </div>
-          <Textarea
-            className="mt-2"
-            rows={2}
-            placeholder="Project description"
-            value={projectDescription}
-            onChange={(event) => setProjectDescription(event.target.value)}
-          />
-        </Card>
-
-        <Card>
-          <h3 className="mb-2 text-sm font-semibold text-[#1a1a1a]">Project Switcher</h3>
+      {/* Header: title + inline project switcher + primary actions */}
+      <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sn:justify-between">
+        <div>
+          <h1 className="text-xl font-semibold text-flc-text">Workflow Dashboard</h1>
+          <p className="mt-1 text-sm text-[#8a92a0]">
+            Coordinate tasks across projects with drag-and-drop delivery.
+          </p>
+        </div>
+        <div className="flex flex-wrap items-center gap-2">
           <select
-            className="h-10 w-full  border border-[#d5dce5] px-3 text-sm"
+            className="h-9 rounded-md border border-flc-border bg-white px-3 text-sm text-flc-text"
             value={selectedProjectId ?? ""}
             onChange={(event) => setSelectedProjectId(event.target.value || null)}
           >
@@ -222,34 +192,85 @@ export function DashboardView({ initialProjectId }: { initialProjectId?: string 
               </option>
             ))}
           </select>
-          <p className="mt-2 text-xs text-[#8a92a0]">
-            One workspace, multiple initiatives, unified execution.
-          </p>
-        </Card>
+          <Button variant="secondary" onClick={reloadEverything}>
+            <RefreshCcw size={14} className="mr-2" />
+            Refresh
+          </Button>
+          <Button onClick={() => (window.location.href = "/calendar")}>
+            Calendar
+            <ArrowRight size={14} className="ml-2" />
+          </Button>
+        </div>
+      </div>
+
+      {/* Create project: collapsed by default to keep the board primary */}
+      <div className="mb-5">
+        {!showCreateProject ? (
+          <button
+            onClick={() => setShowCreateProject(true)}
+            className="text-sm font-medium text-flc-primary hover:underline"
+          >
+            + New project
+          </button>
+        ) : (
+          <Card>
+            <div className="mb-2 flex items-center justify-between">
+              <h3 className="text-sm font-semibold text-flc-text">Create Project</h3>
+              <button
+                onClick={() => setShowCreateProject(false)}
+                className="text-xs text-[#8a92a0] hover:text-flc-text"
+              >
+                Cancel
+              </button>
+            </div>
+            <div className="grid gap-2 sm:grid-cols-2">
+              <Input
+                placeholder="Project name"
+                value={projectName}
+                onChange={(event) => setProjectName(event.target.value)}
+              />
+              <Button
+                onClick={async () => {
+                  await createProject();
+                  setShowCreateProject(false);
+                }}
+              >
+                Add Project
+              </Button>
+            </div>
+            <Textarea
+              className="mt-2"
+              rows={2}
+              placeholder="Project description"
+              value={projectDescription}
+              onChange={(event) => setProjectDescription(event.target.value)}
+            />
+          </Card>
+        )}
       </div>
 
       {error ? <p className="mb-4 text-sm text-flc-danger">{error}</p> : null}
 
       <div className="grid gap-4 lg:grid-cols-[1fr_320px]">
         <section>
-          {/* Phase 2A: View mode tabs */}
-          <div className="mb-4 flex gap-2 border-b border-[#d5dce5]">
+          {/* View toggle: segmented control, same setViewMode mechanic */}
+          <div className="mb-4 inline-flex rounded-md border border-flc-border bg-flc-panel-muted p-1">
             <button
               onClick={() => setViewMode("board")}
-              className={`px-4 py-2 text-sm font-medium transition-colors ${
+              className={`rounded-[4px] px-4 py-1.5 text-sm font-medium transition-colors ${
                 viewMode === "board"
-                  ? "text-flc-primary border-b-2 border-[#1a2942]"
-                  : "text-[#8a92a0] hover:text-[#1a1a1a]"
+                  ? "bg-white text-flc-text shadow-sm"
+                  : "text-[#8a92a0] hover:text-flc-text"
               }`}
             >
               Board
             </button>
             <button
               onClick={() => setViewMode("members")}
-              className={`px-4 py-2 text-sm font-medium transition-colors ${
+              className={`rounded-[4px] px-4 py-1.5 text-sm font-medium transition-colors ${
                 viewMode === "members"
-                  ? "text-flc-primary border-b-2 border-[#1a2942]"
-                  : "text-[#8a92a0] hover:text-[#1a1a1a]"
+                  ? "bg-white text-flc-text shadow-sm"
+                  : "text-[#8a92a0] hover:text-flc-text"
               }`}
             >
               Members
