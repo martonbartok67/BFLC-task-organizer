@@ -45,7 +45,7 @@ export function EventCard({
 
   if (isCompact) {
     return (
-      <div className=" border border-[#d5dce5] bg-gradient-to-br from-blue-50 to-blue-100 px-2 py-1 hover:shadow-md transition-shadow">
+      <div className="rounded-md border border-flc-border bg-flc-panel-muted px-2 py-1 transition-colors hover:border-flc-primary/40">
         <p className="line-clamp-1 text-[11px] font-medium text-[#1a1a1a]">{event.title}</p>
         {event.members.length > 0 && (
           <p className="text-[10px] text-[#8a92a0]">
@@ -58,7 +58,7 @@ export function EventCard({
 
   return (
     <div
-      className="relative  border border-[#d5dce5] bg-white p-4 shadow-sm hover:shadow-md transition-shadow"
+      className="relative rounded-lg border border-flc-border bg-white p-4 transition-colors hover:border-flc-primary/40"
       onMouseEnter={() => setShowActions(true)}
       onMouseLeave={() => setShowActions(false)}
     >
@@ -93,13 +93,13 @@ export function EventCard({
             {event.members.slice(0, 3).map((member) => (
               <span
                 key={member.id}
-                className="inline-block rounded-full bg-white-muted px-2 py-1 text-[10px] text-[#1a1a1a]"
+                className="inline-block rounded-full bg-flc-panel-muted px-2 py-1 text-[10px] text-[#1a1a1a]"
               >
                 {member.fullName}
               </span>
             ))}
             {event.members.length > 3 && (
-              <span className="inline-block rounded-full bg-white-muted px-2 py-1 text-[10px] text-[#8a92a0]">
+              <span className="inline-block rounded-full bg-flc-panel-muted px-2 py-1 text-[10px] text-[#8a92a0]">
                 +{event.members.length - 3}
               </span>
             )}

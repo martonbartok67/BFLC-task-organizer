@@ -114,7 +114,7 @@ export function NotificationBell() {
       {/* Notification Bell Button */}
       <button
         onClick={() => setOpen(!open)}
-        className="relative p-2  hover:bg-white-muted transition-colors duration-200"
+        className="relative rounded-md p-2 hover:bg-flc-panel-muted transition-colors duration-200"
         aria-label="Notifications"
       >
         <Bell size={20} className="text-[#1a1a1a]" />
@@ -127,7 +127,7 @@ export function NotificationBell() {
 
       {/* Notification Dropdown */}
       {open && (
-        <div className="absolute right-0 mt-2 w-80 bg-white  border border-[#d5dce5]  z-50">
+        <div className="absolute right-0 mt-2 w-80 rounded-lg bg-white border border-flc-border z-50">
           {/* Header */}
           <div className="flex items-center justify-between p-4 border-b border-[#d5dce5]">
             <h3 className="font-semibold text-[#1a1a1a]">Notifications</h3>
@@ -163,7 +163,7 @@ export function NotificationBell() {
                       key={notification.id}
                       className={`p-4 transition-colors duration-200 ${
                         isRead ? "bg-white" : "bg-blue-50"
-                      } hover:bg-white-muted`}
+                      } hover:bg-flc-panel-muted`}
                     >
                       <div className="flex items-start gap-3">
                         {/* Icon */}

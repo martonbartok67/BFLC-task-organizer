@@ -195,7 +195,7 @@ export function MembersManagement({
                     key={user.id}
                     onClick={() => addMember(user.id)}
                     disabled={addingUser === user.id}
-                    className="w-full text-left p-3  hover:bg-white border border-slate-200 hover:border-slate-300 transition-all text-sm disabled:opacity-50"
+                    className="w-full text-left rounded-md p-3 hover:bg-flc-panel-muted border border-flc-border transition-colors duration-150 text-sm disabled:opacity-50"
                   >
                     <p className="font-medium text-[#1a1a1a]">{user.name}</p>
                     <p className="text-xs text-[#8a92a0]">{user.email}</p>
@@ -231,11 +231,11 @@ export function MembersManagement({
             {members.map((member) => (
               <div
                 key={member.userId}
-                className="flex items-center gap-4 p-5 hover:bg-white-muted transition-colors"
+                className="flex items-center gap-4 p-5 hover:bg-flc-panel-muted transition-colors"
               >
                 <User
                   size={28}
-                  className="text-slate-400 bg-slate-100 p-1.5  flex-shrink-0"
+                  className="text-[#8a92a0] bg-flc-panel-muted rounded-md p-1.5 flex-shrink-0"
                 />
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-semibold text-flc-text truncate">
@@ -249,7 +249,7 @@ export function MembersManagement({
             ))}
           </div>
 
-          <div className="bg-white-muted p-4 border-t border-[#d5dce5] text-xs text-[#8a92a0]">
+          <div className="bg-flc-panel-muted p-4 border-t border-[#d5dce5] text-xs text-[#8a92a0]">
             {members.length} member{members.length !== 1 ? "s" : ""} in project
           </div>
         </Card>

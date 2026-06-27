@@ -533,7 +533,7 @@ export function TaskDrawer({
                               assignTask(newAssigneeId);
                             }
                           }}
-                          className="h-10 w-full border border-[#d5dce5] px-3 text-sm disabled:bg-white-muted disabled:cursor-not-allowed"
+                          className="h-10 w-full border border-[#d5dce5] px-3 text-sm disabled:bg-flc-panel-muted disabled:cursor-not-allowed"
                         >
                           {projectMembers.map((member) => (
                             <option key={member.userId} value={member.userId}>
@@ -730,7 +730,7 @@ export function TaskDrawer({
                     <Link2 size={14} />
                   </Button>
                 </div>
-                <label className="mt-2 flex cursor-pointer items-center gap-2  border border-dashed border-[#d5dce5] px-3 py-2 text-xs text-[#8a92a0]">
+                <label className="mt-2 flex cursor-pointer items-center gap-2 rounded-md border border-dashed border-flc-border px-3 py-2 text-xs text-[#8a92a0]">
                   <Paperclip size={14} />
                   Upload file
                   <input

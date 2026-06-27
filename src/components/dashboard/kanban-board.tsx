@@ -163,7 +163,7 @@ export function KanbanBoard({
               ))}
               {columnTasks.length === 0 ? (
                 // Phase 8: Better empty state visual
-                <div className=" border-2 border-dashed border-[#d5dce5]/50 bg-gradient-to-br from-flc-panel-muted/50 to-slate-50/30 p-4 text-center text-xs text-[#8a92a0] transition-all duration-300 hover:border-[#d5dce5] hover:bg-white-muted/50">
+                <div className="rounded-md border-2 border-dashed border-flc-border bg-flc-panel-muted p-4 text-center text-xs text-[#8a92a0] transition-colors duration-150 hover:border-flc-primary/40">
                   <p className="font-medium">No tasks yet</p>
                   <p className="text-xs mt-1">Drop or create tasks here</p>
                 </div>
