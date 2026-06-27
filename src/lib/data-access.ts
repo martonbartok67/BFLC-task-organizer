@@ -436,6 +436,32 @@ function toTaskUpdatePayload(updates: Partial<Task>) {
 
 export async function updateTask(taskId: string, updates: Partial<Task>) {
   const supabase = await createClient();
+
+  // Editing status via the task drawer only sends `status`, not `columnId` -
+  // the kanban board groups cards by columnId, so without this the card
+  // stays visually in its old column even though status updated correctly.
+  // Drag-and-drop is unaffected: moveTask already sends both explicitly.
+  if (updates.status && !Object.prototype.hasOwnProperty.call(updates, "columnId")) {
+    const { data: currentTask } = await supabase
+      .from("tasks")
+      .select("project_id")
+      .eq("id", taskId)
+      .single<{ project_id: string }>();
+
+    if (currentTask?.project_id) {
+      const { data: matchingColumn } = await supabase
+        .from("board_columns")
+        .select("id")
+        .eq("project_id", currentTask.project_id)
+        .eq("key", updates.status)
+        .single<{ id: string }>();
+
+      if (matchingColumn?.id) {
+        updates = { ...updates, columnId: matchingColumn.id };
+      }
+    }
+  }
+
   const { data, error } = await supabase
     .from("tasks")
     .update(toTaskUpdatePayload(updates))
