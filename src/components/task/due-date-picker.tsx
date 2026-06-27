@@ -9,14 +9,20 @@ interface DueDatePickerProps {
   disabled?: boolean;
 }
 
-function toDateInputValue(iso: string | null) {
+function toDateTimeInputValue(iso: string | null) {
   if (!iso) return "";
-  return new Date(iso).toISOString().slice(0, 10);
+  const date = new Date(iso);
+  const year = date.getUTCFullYear();
+  const month = String(date.getUTCMonth() + 1).padStart(2, "0");
+  const day = String(date.getUTCDate()).padStart(2, "0");
+  const hours = String(date.getUTCHours()).padStart(2, "0");
+  const minutes = String(date.getUTCMinutes()).padStart(2, "0");
+  return `${year}-${month}-${day}T${hours}:${minutes}`;
 }
 
-function fromDateInputValue(date: string) {
-  if (!date) return null;
-  return new Date(date).toISOString();
+function fromDateTimeInputValue(dateTime: string) {
+  if (!dateTime) return null;
+  return new Date(dateTime + ":00Z").toISOString();
 }
 
 function formatDueDate(iso: string | null): string {
@@ -38,7 +44,10 @@ function formatDueDate(iso: string | null): string {
     return `Overdue by ${daysOverdue} day${daysOverdue !== 1 ? "s" : ""}`;
   }
 
-  return date.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+  const dateStr = date.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+  const timeStr = date.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", hour12: true });
+  const hasTime = date.getUTCHours() !== 0 || date.getUTCMinutes() !== 0;
+  return hasTime ? `${dateStr} at ${timeStr}` : dateStr;
 }
 
 export function DueDatePicker({ value, onChange, disabled = false }: DueDatePickerProps) {
@@ -46,17 +55,17 @@ export function DueDatePicker({ value, onChange, disabled = false }: DueDatePick
 
   return (
     <div className="space-y-2">
-      <label className="text-sm font-medium text-[#1a1a1a]">Due Date</label>
+      <label className="text-xs font-medium text-[#8a92a0]">Due Date &amp; Time</label>
       <div className="flex items-center gap-2">
         <div className="relative flex-1">
           <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 text-[#8a92a0]" size={16} />
           <input
-            type="date"
-            value={toDateInputValue(value)}
-            onChange={(e) => onChange(fromDateInputValue(e.target.value))}
+            type="datetime-local"
+            value={toDateTimeInputValue(value)}
+            onChange={(e) => onChange(fromDateTimeInputValue(e.target.value))}
             disabled={disabled}
-            className={`w-full  border border-[#d5dce5] bg-white pl-10 pr-3 py-2 text-sm placeholder-flc-text-muted transition-all focus:border-[#1a2942] focus:outline-none focus:ring-2 focus:ring-[#1a2942] disabled:opacity-50 ${
-              isOverdue ? "border-[#8b5a5a] bg-[#f5f0f0]" : ""
+            className={`w-full rounded-md border border-flc-border bg-white pl-10 pr-3 py-2 text-sm placeholder-flc-text-muted transition-colors duration-150 focus:border-flc-primary focus:outline-none focus:ring-2 focus:ring-flc-primary/20 disabled:opacity-50 ${
+              isOverdue ? "border-flc-danger bg-[#f5eded]" : ""
             }`}
           />
         </div>
@@ -66,14 +75,14 @@ export function DueDatePicker({ value, onChange, disabled = false }: DueDatePick
             variant="ghost"
             size="sm"
             onClick={() => onChange(null)}
-            className="text-[#8a92a0] hover:text-[#1a1a1a]"
+            className="text-[#8a92a0] hover:text-flc-text"
           >
             <X size={16} />
           </Button>
         )}
       </div>
       {value && (
-        <p className={`text-xs ${isOverdue ? "text-[#8b5a5a] font-semibold" : "text-[#8a92a0]"}`}>
+        <p className={`text-xs ${isOverdue ? "text-flc-danger font-semibold" : "text-[#8a92a0]"}`}>
           {formatDueDate(value)}
         </p>
       )}

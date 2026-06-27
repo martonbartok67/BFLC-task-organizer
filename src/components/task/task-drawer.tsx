@@ -22,14 +22,20 @@ function toDateInputValue(iso: string | null) {
   if (!iso) {
     return "";
   }
-  return new Date(iso).toISOString().slice(0, 10);
+  const date = new Date(iso);
+  const year = date.getUTCFullYear();
+  const month = String(date.getUTCMonth() + 1).padStart(2, "0");
+  const day = String(date.getUTCDate()).padStart(2, "0");
+  const hours = String(date.getUTCHours()).padStart(2, "0");
+  const minutes = String(date.getUTCMinutes()).padStart(2, "0");
+  return `${year}-${month}-${day}T${hours}:${minutes}`;
 }
 
-function fromDateInputValue(date: string) {
-  if (!date) {
+function fromDateInputValue(dateTime: string) {
+  if (!dateTime) {
     return null;
   }
-  return new Date(date).toISOString();
+  return new Date(dateTime + ":00Z").toISOString();
 }
 
 const statusOptions: Array<{ value: TaskStatus; label: string }> = [
@@ -584,9 +590,9 @@ export function TaskDrawer({
 
               <div className="grid gap-3 sm:grid-cols-2">
                 <label className="text-xs font-medium text-[#8a92a0]">
-                  Start
+                  Start Date &amp; Time
                   <Input
-                    type="date"
+                    type="datetime-local"
                     value={toDateInputValue(details.task.startDate)}
                     onChange={(event) =>
                       setDetails((prev) =>

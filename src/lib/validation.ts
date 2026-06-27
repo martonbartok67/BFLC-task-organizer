@@ -19,8 +19,8 @@ export const taskCreateSchema = z.object({
   status: z.enum(["todo", "in_progress", "done"]),
   priority: z.enum(["low", "medium", "high", "critical"]),
   assigneeId: z.string().uuid().nullable().optional(),
-  dueDate: z.string().datetime().nullable().optional(),
-  startDate: z.string().datetime().nullable().optional(),
+  dueDate: z.string().datetime({ offset: true }).nullable().optional(),
+  startDate: z.string().datetime({ offset: true }).nullable().optional(),
   labels: z.array(z.string()).optional(),
   isMilestone: z.boolean().optional()
 });
