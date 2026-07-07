@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { SkeletonCard, SkeletonKanbanColumn, SkeletonActivityFeed } from "@/components/ui/skeleton";
 import type { BoardColumn, Project, Task } from "@/types/domain";
 
 type BoardPayload = {
@@ -305,11 +306,19 @@ export function DashboardView({ initialProjectId }: { initialProjectId?: string 
           </div>
 
           {!boardReady ? (
-            <Card>
-              <p className="text-sm text-[#8a92a0]">
-                {loadingBoard ? "Loading..." : "Create or select a project to start."}
-              </p>
-            </Card>
+            loadingBoard ? (
+              <div className="grid gap-4 grid-cols-3">
+                <SkeletonKanbanColumn count={4} />
+                <SkeletonKanbanColumn count={2} />
+                <SkeletonKanbanColumn count={3} />
+              </div>
+            ) : (
+              <Card>
+                <p className="text-sm text-[#8a92a0]">
+                  Create or select a project to start.
+                </p>
+              </Card>
+            )
           ) : viewMode === "board" ? (
             <KanbanBoard
               columns={boardData.columns}

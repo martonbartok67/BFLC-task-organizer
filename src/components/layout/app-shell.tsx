@@ -4,6 +4,7 @@ import type React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { BarChart3, CalendarDays, ClipboardList, FolderKanban, UserCheck, Menu, X, MoreHorizontal } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -137,10 +138,21 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
         {/* Main Content */}
         <main className="flex-1 flex flex-col overflow-hidden">
-          <div className="flex-1 overflow-y-auto p-4 sm:p-6 md:p-8 pb-24 md:pb-6">
-            <div className="max-w-7xl mx-auto">
-              {children}
-            </div>
+          <div className="flex-1 overflow-y-auto pb-24 md:pb-6">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={pathname}
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -8 }}
+                transition={{ duration: 0.2, ease: "easeInOut" }}
+                className="p-4 sm:p-6 md:p-8"
+              >
+                <div className="max-w-7xl mx-auto">
+                  {children}
+                </div>
+              </motion.div>
+            </AnimatePresence>
           </div>
 
           {/* Mobile Bottom Tab Bar - dark, matches sidebar */}

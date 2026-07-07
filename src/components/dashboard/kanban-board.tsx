@@ -156,6 +156,7 @@ export function KanbanBoard({
                   <TaskCard
                     task={task}
                     draggable
+                    isDragging={draggedTaskId === task.id}
                     onDragStart={setDraggedTaskId}
                     onClick={() => onTaskSelect(task.id)}
                   />

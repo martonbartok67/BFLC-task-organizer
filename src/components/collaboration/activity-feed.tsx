@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { SkeletonActivityFeed } from "@/components/ui/skeleton";
 import type { ActivityEvent } from "@/types/domain";
 
 export function ActivityFeed({ projectId }: { projectId?: string }) {
@@ -40,8 +41,8 @@ export function ActivityFeed({ projectId }: { projectId?: string }) {
         <h3 className="text-sm font-semibold text-[#1a1a1a]">Activity Feed</h3>
         <p className="text-xs text-[#8a92a0]">Recent collaboration and workflow updates.</p>
       </div>
-      <div className="flc-scroll max-h-[70vh] space-y-3 overflow-y-auto p-4">
-        {loading ? <p className="text-xs text-[#8a92a0]">Loading activity...</p> : null}
+      <div className="flc-scroll max-h-[70vh] overflow-y-auto p-4">
+        {loading ? <SkeletonActivityFeed /> : null}
         {error ? <p className="text-xs text-flc-danger">{error}</p> : null}
         {events.map((event) => (
           <article key={event.id} className=" border border-[#d5dce5] bg-white p-3">

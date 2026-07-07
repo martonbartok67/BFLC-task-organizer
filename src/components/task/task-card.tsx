@@ -8,12 +8,14 @@ export function TaskCard({
   task,
   onClick,
   draggable = false,
-  onDragStart
+  onDragStart,
+  isDragging = false
 }: {
   task: Task;
   onClick?: () => void;
   draggable?: boolean;
   onDragStart?: (taskId: string) => void;
+  isDragging?: boolean;
 }) {
   return (
     <button
@@ -21,7 +23,11 @@ export function TaskCard({
       draggable={draggable}
       onDragStart={() => onDragStart?.(task.id)}
       onClick={onClick}
-      className={`group w-full rounded-md border bg-white p-3 text-left transition-colors duration-150 hover:border-flc-primary hover:bg-flc-panel-muted ${
+      className={`group w-full rounded-md border bg-white p-3 text-left transition-all duration-150 ${
+        isDragging 
+          ? "shadow-lg shadow-flc-primary/40 border-flc-primary opacity-95" 
+          : "hover:border-flc-primary hover:bg-flc-panel-muted"
+      } ${
         task.isMilestone ? "border-flc-border border-l-[3px] border-l-flc-accent" : "border-flc-border"
       }`}
     >
