@@ -202,5 +202,6 @@ export function KanbanBoard({
         );
       })}
     </div>
+    </>
   );
 }
