@@ -76,18 +76,46 @@ export function KanbanBoard({
     setIsCreatingByColumn((prev) => ({ ...prev, [column.id]: false }));
   }
 
-  return (
-    // Phase 7: Mobile responsive - vertical on mobile, horizontal on desktop
-    <div className="flc-scroll flex flex-col overflow-y-auto md:flex-row md:overflow-x-auto md:overflow-y-hidden gap-4 pb-2">
-      {columns.map((column) => {
-        const columnTasks = tasksByColumn.get(column.id) ?? [];
-        const isCreating = Boolean(isCreatingByColumn[column.id]);
-        const newTitle = newTitleByColumn[column.id] ?? "";
+  const [mobileColumn, setMobileColumn] = useState<string | null>(columns[0]?.id ?? null);
 
-        return (
-          <section
+  return (
+    <>
+      {/* Mobile: Status tabs */}
+      <div className="flex md:hidden gap-2 mb-4 overflow-x-auto pb-2">
+        {columns.map((column) => (
+          <button
             key={column.id}
-            className="flex h-[50vh] w-full md:h-[70vh] md:min-w-[300px] md:max-w-[320px] flex-col rounded-lg border border-[#d5dce5] bg-[#f8f9fb] p-3 transition-colors duration-150 hover:border-[#8b7355]"
+            onClick={() => setMobileColumn(column.id)}
+            className={`whitespace-nowrap rounded-md px-3 py-1.5 text-sm font-medium transition-colors duration-150 flex-shrink-0 ${
+              mobileColumn === column.id
+                ? "bg-flc-primary text-white"
+                : "bg-flc-panel-muted text-[#8a92a0] hover:text-flc-text"
+            }`}
+          >
+            {column.name}
+            <span className="ml-2 text-xs font-normal opacity-75">
+              {(tasksByColumn.get(column.id) ?? []).length}
+            </span>
+          </button>
+        ))}
+      </div>
+
+      {/* Kanban board: one column per view on mobile, all columns on desktop */}
+      <div className="flc-scroll flex flex-col md:flex-row md:overflow-x-auto md:overflow-y-hidden gap-4 pb-2">
+        {columns.map((column) => {
+          // Skip columns not matching mobile view
+          if (mobileColumn && column.id !== mobileColumn) {
+            return null;
+          }
+
+          const columnTasks = tasksByColumn.get(column.id) ?? [];
+          const isCreating = Boolean(isCreatingByColumn[column.id]);
+          const newTitle = newTitleByColumn[column.id] ?? "";
+
+          return (
+            <section
+              key={column.id}
+              className="flex h-[50vh] w-full md:h-[70vh] md:min-w-[300px] md:max-w-[320px] flex-col rounded-lg border border-flc-border bg-flc-panel-muted p-3 transition-colors duration-150 hover:border-flc-accent"
             style={{
               animationDelay: `${columns.indexOf(column) * 100}ms`
             }}

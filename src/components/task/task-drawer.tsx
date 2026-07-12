@@ -435,25 +435,41 @@ export function TaskDrawer({
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex justify-end bg-slate-950/35">
-      <div className="flc-scroll h-full w-full max-w-[520px] overflow-y-auto border-l border-[#d5dce5] bg-white p-5">
-        <div className="mb-4 flex items-center justify-between">
-          <h3 className="text-lg font-semibold text-[#1a1a1a]">Task Details</h3>
+    <div className="fixed inset-0 z-50 flex md:justify-end bg-slate-950/35">
+      {/* Mobile: full-screen bottom sheet, Desktop: right slide-over */}
+      <div className="w-full md:max-w-[520px] md:border-l md:border-[#d5dce5] h-full md:h-auto flex flex-col md:h-screen">
+        {/* Mobile header with better touch targets */}
+        <div className="flex md:hidden items-center justify-between px-5 py-3 border-b border-flc-border bg-white">
+          <h3 className="text-lg font-semibold text-flc-text">Task Details</h3>
+          <button
+            type="button"
+            onClick={onClose}
+            className="p-2 -m-2 rounded-lg hover:bg-flc-panel-muted transition-colors"
+          >
+            <X size={24} className="text-[#8a92a0]" />
+          </button>
+        </div>
+
+        {/* Desktop header */}
+        <div className="hidden md:flex items-center justify-between px-5 py-4 border-b border-flc-border bg-white">
+          <h3 className="text-lg font-semibold text-flc-text">Task Details</h3>
           <Button variant="ghost" size="sm" onClick={onClose}>
             <X size={16} />
           </Button>
         </div>
 
-        {loading ? <p className="text-sm text-[#8a92a0]">Loading...</p> : null}
-        {error ? (
-          <div className="mb-4 border border-[#8b5a5a] bg-[#f5f0f0] p-3">
-            <p className="whitespace-pre-wrap text-sm text-[#8b5a5a] font-medium">{error}</p>
-          </div>
-        ) : null}
+        {/* Scrollable content */}
+        <div className="flc-scroll flex-1 overflow-y-auto bg-white px-5 py-4">
+          {loading ? <p className="text-sm text-[#8a92a0]">Loading...</p> : null}
+          {error ? (
+            <div className="mb-4 border border-[#8b5a5a] bg-[#f5f0f0] p-3 rounded-md">
+              <p className="whitespace-pre-wrap text-sm text-[#8b5a5a] font-medium">{error}</p>
+            </div>
+          ) : null}
 
-        {!loading && details ? (
-          <div className="space-y-6">
-            <section className="space-y-3 border border-[#d5dce5] bg-[#f8f9fb] p-4">
+          {!loading && details ? (
+            <div className="space-y-6">
+              <section className="space-y-3 border border-flc-border bg-flc-panel-muted p-4 rounded-md">
               <Input
                 value={details.task.title}
                 onChange={(event) =>
