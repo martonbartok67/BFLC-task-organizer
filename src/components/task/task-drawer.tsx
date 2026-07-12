@@ -137,6 +137,12 @@ export function TaskDrawer({
     }
     setSaving(true);
     setError(null);
+    
+    // Log exactly what we're sending for debugging
+    console.log("Saving task with patch:", JSON.stringify(patch, null, 2));
+    console.log("dueDate type:", typeof patch.dueDate, "value:", patch.dueDate);
+    console.log("startDate type:", typeof patch.startDate, "value:", patch.startDate);
+    
     try {
       const response = await fetch(`/api/tasks/${taskId}`, {
         method: "PATCH",
@@ -144,11 +150,9 @@ export function TaskDrawer({
         body: JSON.stringify(patch)
       });
       
-      if (!response.ok) {
-        console.error(`Patch failed with status ${response.status}`);
-      }
-      
       const payload = await response.json();
+      console.log("API response status:", response.status);
+      console.log("API response payload:", payload);
       
       if (!response.ok) {
         let errorMessage = "Could not update task.";
@@ -670,6 +674,30 @@ export function TaskDrawer({
                     labels: details.task.labels || [],
                     isMilestone: details.task.isMilestone ?? false
                   };
+                  
+                  // Validate dates: ensure they're either null or valid ISO strings
+                  const isValidIsoDateTime = (value: any): value is string => {
+                    if (typeof value !== "string") return false;
+                    // Must be valid ISO 8601 datetime (with or without timezone)
+                    try {
+                      new Date(value);
+                      // Check format: YYYY-MM-DDTHH:mm:ss with optional milliseconds and timezone
+                      return /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d{3})?(Z|[+-]\d{2}:\d{2})$/.test(value);
+                    } catch {
+                      return false;
+                    }
+                  };
+                  
+                  // Strip invalid dates
+                  if (patch.dueDate !== null && !isValidIsoDateTime(patch.dueDate)) {
+                    console.warn("Invalid dueDate format, clearing:", patch.dueDate);
+                    patch.dueDate = null;
+                  }
+                  if (patch.startDate !== null && !isValidIsoDateTime(patch.startDate)) {
+                    console.warn("Invalid startDate format, clearing:", patch.startDate);
+                    patch.startDate = null;
+                  }
+                  
                   patchTask(patch);
                 }}
                 disabled={saving}
