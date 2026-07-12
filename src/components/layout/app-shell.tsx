@@ -7,6 +7,8 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { BarChart3, CalendarDays, ClipboardList, FolderKanban, UserCheck, Menu, X, MoreHorizontal } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { ToastProvider } from "@/lib/toast-context";
+import { ToastContainer } from "@/components/ui/toast";
 
 // Primary: daily-use workspace views. Secondary: infrequent (approval gate, auth).
 const primaryNavItems = [
@@ -27,7 +29,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const isAnySecondaryActive = secondaryNavItems.some((item) => pathname.startsWith(item.href));
 
   return (
-    <div className="min-h-screen bg-[#f8f9fb]">
+    <ToastProvider>
+      <div className="min-h-screen bg-[#f8f9fb]">
       {/* Mobile Header - dark, matches sidebar for a unified signature */}
       <div className="sticky top-0 z-40 md:hidden border-b border-white/10 bg-flc-primary">
         <div className="flex items-center justify-between px-4 py-3">
@@ -195,6 +198,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           </nav>
         </main>
       </div>
+      <ToastContainer />
     </div>
+    </ToastProvider>
   );
 }

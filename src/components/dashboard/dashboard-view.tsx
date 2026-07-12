@@ -11,6 +11,7 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { SkeletonCard, SkeletonKanbanColumn, SkeletonActivityFeed } from "@/components/ui/skeleton";
+import { useToast } from "@/lib/toast-context";
 import type { BoardColumn, Project, Task } from "@/types/domain";
 
 type BoardPayload = {
@@ -31,6 +32,7 @@ function buildProjectCode(name: string) {
 }
 
 export function DashboardView({ initialProjectId }: { initialProjectId?: string | null } = {}) {
+  const { addToast } = useToast();
   const [projects, setProjects] = useState<Project[]>([]);
   const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
   const [boardData, setBoardData] = useState<BoardPayload | null>(null);
@@ -123,7 +125,9 @@ export function DashboardView({ initialProjectId }: { initialProjectId?: string 
     });
     const payload = await response.json();
     if (!response.ok) {
-      setError(payload.error ?? "Could not create project.");
+      const errorMsg = payload.error ?? "Could not create project.";
+      setError(errorMsg);
+      addToast(errorMsg, "error");
       return;
     }
     const createdProject = payload.data as Project;
@@ -131,6 +135,8 @@ export function DashboardView({ initialProjectId }: { initialProjectId?: string 
     setProjectDescription("");
     await loadProjects();
     setSelectedProjectId(createdProject.id);
+    addToast(`Project "${createdProject.name}" created`, "success");
+    setShowCreateProject(false);
   }
 
   async function moveTask(input: {

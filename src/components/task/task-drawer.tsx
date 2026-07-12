@@ -9,6 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { LabelEditor } from "@/components/task/label-editor";
 import { PrioritySelector } from "@/components/task/priority-selector";
 import { DueDatePicker } from "@/components/task/due-date-picker";
+import { useToast } from "@/lib/toast-context";
 import type { Subtask, Task, TaskAttachment, TaskComment, TaskPriority, TaskStatus } from "@/types/domain";
 
 type TaskDetails = {
@@ -64,6 +65,7 @@ export function TaskDrawer({
   onClose: () => void;
   onTaskChanged: () => Promise<void>;
 }) {
+  const { addToast } = useToast();
   const [details, setDetails] = useState<TaskDetails | null>(null);
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -190,6 +192,7 @@ export function TaskDrawer({
               }
             : prev
         );
+        addToast("Task saved successfully", "success");
         await onTaskChanged();
       }
     } catch (err) {
@@ -212,7 +215,9 @@ export function TaskDrawer({
     });
     const payload = await response.json();
     if (!response.ok) {
-      setError(payload.error ?? "Could not add comment.");
+      const errorMsg = payload.error ?? "Could not add comment.";
+      setError(errorMsg);
+      addToast(errorMsg, "error");
       return;
     }
     setDetails((prev) =>
@@ -223,6 +228,7 @@ export function TaskDrawer({
           }
         : prev
     );
+    addToast("Comment added", "success");
     setCommentBody("");
     await onTaskChanged();
   }
@@ -238,7 +244,9 @@ export function TaskDrawer({
     });
     const payload = await response.json();
     if (!response.ok) {
-      setError(payload.error ?? "Could not create subtask.");
+      const errorMsg = payload.error ?? "Could not create subtask.";
+      setError(errorMsg);
+      addToast(errorMsg, "error");
       return;
     }
     setDetails((prev) =>
@@ -249,6 +257,7 @@ export function TaskDrawer({
           }
         : prev
     );
+    addToast("Subtask created", "success");
     setSubtaskTitle("");
     await onTaskChanged();
   }
@@ -360,7 +369,9 @@ export function TaskDrawer({
       const payload = await response.json();
 
       if (!response.ok) {
-        setError(payload.error ?? "Failed to claim task");
+        const errorMsg = payload.error ?? "Failed to claim task";
+        setError(errorMsg);
+        addToast(errorMsg, "error");
         setIsClaiming(false);
         return;
       }
@@ -375,10 +386,13 @@ export function TaskDrawer({
           : prev
       );
 
+      addToast("Task claimed successfully", "success");
       await onTaskChanged();
       setIsClaiming(false);
     } catch (e) {
-      setError("Failed to claim task");
+      const errorMsg = "Failed to claim task";
+      setError(errorMsg);
+      addToast(errorMsg, "error");
       setIsClaiming(false);
     }
   }
